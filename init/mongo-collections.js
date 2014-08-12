@@ -10,6 +10,7 @@ function initCollections(db)
 {
     var i,
         collectionsAndIndexes = {
+        	worker_state : [],
             log_totals : [
 	            { calls : 1 },
 	            { emails : 1 },
