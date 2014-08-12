@@ -4,7 +4,7 @@ var _ = require('lodash');
 module.exports = function(req, res) {
 	MongoClient.connect(process.env.MONGOHQ_URL, function(err, db) {
 		if (err) throw err;
-		db.collection('tweets').find({}).toArray(function(err, docs) {
+		db.collection('tweets').find({"followers_count": {$gt: 100000}}).toArray(function(err, docs) {
 			console.log(docs);
 	        var tweets = _.map(docs, function(tweet){
 	        	return {
