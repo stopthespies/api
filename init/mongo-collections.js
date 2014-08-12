@@ -17,7 +17,7 @@ function initCollections(db)
 	            { views : 1 },
             ],
 			tweets : [
-
+				{ followers_count : 1 },
             ],
         },
         running = 0;

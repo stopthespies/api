@@ -76,7 +76,7 @@ function loadTweets(db, lastOffset)
 	    	coll.insert(data.statuses.map(function(status) {
 	    		var u = status.user;
 	    		return {
-	    			_id : status.id,
+	    			_id : "" + status.id,
 	    			created_at : parseTwitterDate(status.created_at),
 	    			text : status.text,
 	    			user : {
@@ -92,7 +92,7 @@ function loadTweets(db, lastOffset)
 	    				profile_image_url : u.profile_image_url.replace(/^https?:/i, ''),
 	    			},
 	    		};
-	    	}), function(err, res) {
+	    	}), {w : 1}, function(err, res) {
 	    		if (err) throw err;
 
 	    		finaliseRun(db, maxId);
@@ -103,7 +103,7 @@ function loadTweets(db, lastOffset)
 
 function finaliseRun(db, newOffset)
 {
-	db.collection('worker_state').save({_id: 'last_tweet', value: newOffset}, function(err, res) {
+	db.collection('worker_state').save({_id: 'last_tweet', value: newOffset}, {w : 1}, function(err, res) {
 		if (err) throw err;
 
 		console.log('Done. New offset is ' + newOffset);
