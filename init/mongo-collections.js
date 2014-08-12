@@ -5,7 +5,7 @@ mongo.get().then(function(db) { initCollections(db); }, function(err) { throw er
 function initCollections(db)
 {
     var i,
-        collectionsAndIndexes = {
+        collectionsAndIndexes = {				// CONFIGURE COLLECTIONS TO PREPOPULATE
         	worker_state : [],
             log_totals : [
 	            { calls : 1 },
@@ -15,6 +15,11 @@ function initCollections(db)
 			tweets : [
 				{ followers_count : 1 },
             ],
+        },
+        collectionRecords = {					// CONFIGURE RECORDS TO PREPOPULATE
+        	log_totals : [
+        		{ _id : 'overall_totals' }
+        	],
         },
         running = 0;
 
@@ -32,7 +37,9 @@ function initCollections(db)
     	++running;
         (function() {
             var coll = i,
-                fields = collectionsAndIndexes[i];
+                fields = collectionsAndIndexes[i],
+                records = collectionRecords[i] || null;
+
             db.createCollection(coll, function(err, collection) {
                 console.log('Created collection ' + coll);
 
@@ -43,6 +50,17 @@ function initCollections(db)
                         var index = fields[j];
                         collection.ensureIndex(index, function(err, indexName) {
                             console.log('Indexed collection ' + coll + ':', index);
+                            whenDone();
+                        });
+                    })();
+                }
+
+                var k;
+                for (k in records) {
+                	++running;
+                    (function() {
+                        collection.save(records[k], function(err, res) {
+                            console.log('Stored record for ' + coll);
                             whenDone();
                         });
                     })();
