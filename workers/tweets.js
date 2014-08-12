@@ -61,6 +61,7 @@ function loadTweets(db, lastOffset)
 
     	var coll = db.collection('tweets');
     	var maxId = lastOffset;
+    	var writesInProgress = 0;
 
     	if (!data.statuses.length) {
     		finaliseRun(db, maxId);
@@ -73,9 +74,11 @@ function loadTweets(db, lastOffset)
 	    	});
 
     		// save all at once
-	    	coll.insert(data.statuses.map(function(status) {
+	    	data.statuses.forEach(function(status) {
+    		(function() {
+    			++writesInProgress;
 	    		var u = status.user;
-	    		return {
+	    		var tweet = {
 	    			_id : "" + status.id,
 	    			created_at : parseTwitterDate(status.created_at),
 	    			text : status.text,
@@ -92,10 +95,14 @@ function loadTweets(db, lastOffset)
 	    				profile_image_url : u.profile_image_url.replace(/^https?:/i, ''),
 	    			},
 	    		};
-	    	}), {w : 1}, function(err, res) {
-	    		if (err) throw err;
+	    		coll.save(tweet, {w : 1}, function(err, res) {
+		    		if (err) throw err;
 
-	    		finaliseRun(db, maxId);
+		    		if (--writesInProgress == 0) {
+			    		finaliseRun(db, maxId);
+			    	}
+		    	});
+		    })();
 	    	});
     	}
     });
