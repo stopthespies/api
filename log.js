@@ -65,10 +65,10 @@ module.exports = function() {
             console.log("LOG A "+event_type+" EVENT");
 
             connectToMongo(
-                    function(db) {
-                        sendToMongo(event_type, db);
-                        success(res);
-                    }
+                function onSuccess(db) {
+                    sendToMongo(event_type, db);
+                    success(res);
+                }
             );
             return;
         }
