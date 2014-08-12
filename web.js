@@ -4,6 +4,7 @@ var MongoClient = require('mongodb').MongoClient;
 
 var log = require('./log');
 var tweets = require('./tweets');
+var stats = require('./stats');
 
 
 MongoClient.connect(process.env.MONGOHQ_URL, function(err, db) {
@@ -16,8 +17,9 @@ MongoClient.connect(process.env.MONGOHQ_URL, function(err, db) {
             message: 'hello world.'
         });
     });
+    app.get('/stats', stats); // Retrieve statistics
 
-    app.get('/log', log);
+    app.get('/log', log); // Used for logging
 
     app.get('/tweets', tweets);
 
@@ -26,3 +28,5 @@ MongoClient.connect(process.env.MONGOHQ_URL, function(err, db) {
         console.log('Listening on ' + port);
     });
 });
+
+
