@@ -1,10 +1,6 @@
-var MongoClient = require('mongodb').MongoClient;
+var mongo = require(__dirname + '/../lib/database');
 
-MongoClient.connect(process.env.MONGOHQ_URL, function(err, db) {
-	if (err) throw err;
-
-    process.nextTick(function() { initCollections(db); });
-});
+mongo.get().then(function(db) { initCollections(db); }, function(err) { throw err; });
 
 function initCollections(db)
 {

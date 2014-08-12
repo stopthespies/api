@@ -1,6 +1,5 @@
 var express = require('express');
 var app = express();
-var MongoClient = require('mongodb').MongoClient;
 var cors = require('cors')
 
 var log = require('./log');
@@ -8,11 +7,12 @@ var tweets = require('./tweets');
 var stats = require('./stats');
 var email = require('./email');
 
+var mongo = require(__dirname + '/lib/database');
+
 app.use(cors());
 
 
-MongoClient.connect(process.env.MONGOHQ_URL, function(err, db) {
-    if (err) throw err;
+mongo.get().then(function(db) {
     var totalsCollection = db.collection('totals');
     var tweetsCollection = db.collection('tweets');
 
@@ -35,6 +35,8 @@ MongoClient.connect(process.env.MONGOHQ_URL, function(err, db) {
     app.listen(port, function() {
         console.log('Listening on ' + port);
     });
+}, function(err) {
+	throw err;
 });
 
 

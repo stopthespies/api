@@ -1,9 +1,8 @@
-var MongoClient = require('mongodb').MongoClient;
+var mongo = require(__dirname + '/lib/database');
 var _ = require('lodash');
 
 module.exports = function(req, res) {
-	MongoClient.connect(process.env.MONGOHQ_URL, function(err, db) {
-		if (err) throw err;
+	mongo.get().then(function(db) {
 		db.collection('tweets').find({}).toArray(function(err, docs) {
 			console.log(docs);
 	        var tweets = _.map(docs, function(tweet){
@@ -31,6 +30,8 @@ module.exports = function(req, res) {
 			followers: 1000
 		}];
 		*/
+	}, function(err) {
+		throw err;
 	});
 
 };

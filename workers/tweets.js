@@ -9,7 +9,7 @@ var TWEETS_MATCH = '#RobinWilliams';
 
 var async = require('async');
 var Twit = require('twit');
-var MongoClient = require('mongodb').MongoClient;
+var mongo = require(__dirname + '/../lib/database');
 
 var twit = new Twit({
   consumer_key: process.env.TWITTER_CONSUMER_KEY,
@@ -20,12 +20,12 @@ var twit = new Twit({
 
 //------------------------------------------------------------------------------
 
-MongoClient.connect(process.env.MONGOHQ_URL, function(err, db) {
-    if (err) throw err;
-
+mongo.get().then(function(db) {
     process.nextTick(function() {
     	startProcess(db);
     });
+}, function(err) {
+	throw err;
 });
 
 function startProcess(db)
