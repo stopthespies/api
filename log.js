@@ -2,7 +2,7 @@ module.exports = function() {
 
     var mongo = require(__dirname + '/lib/database');
 
-    var EVENT_TYPES = ['view', 'call', 'email'];
+    var EVENT_TYPES = ['views', 'calls', 'emails'];
     var COLLECTION_NAME = 'log_totals';
     var OVERALL_TOTALS_ID = 'overall_totals';
 
