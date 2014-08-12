@@ -10,8 +10,7 @@ function initCollections(db)
 {
     var i,
         collectionsAndIndexes = {
-            log_totals : [],
-            log_legislators : [
+            log_totals : [
 	            { calls : 1 },
 	            { emails : 1 },
 	            { views : 1 },
