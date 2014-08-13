@@ -27,13 +27,13 @@ module.exports = function() {
     }
 
     function success(res) {
-        res.send({
+        res.jsonp({
             message: 'Event logged'
         });
     }
 
     function fail(res) {
-        res.send({
+        res.jsonp({
             message: 'Failed to log'
         });
     }
