@@ -13,8 +13,6 @@ app.use(cors());
 
 
 mongo.get().then(function(db) {
-    var totalsCollection = db.collection('totals');
-    var tweetsCollection = db.collection('tweets');
 
     app.get('/', function(req, res) {
         res.send({

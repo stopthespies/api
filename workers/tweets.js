@@ -9,7 +9,6 @@ var TWEETS_MATCH = config.tweet_processor_match;
 
 //------------------------------------------------------------------------------
 
-var async = require('async');
 var Twit = require('twit');
 var mongo = require(__dirname + '/../lib/database');
 
