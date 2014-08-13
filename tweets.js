@@ -13,7 +13,7 @@ module.exports = function(req, res) {
 					tweet: tweet.text,
 					handle: tweet.user.screen_name,
 					avatar: tweet.user.profile_image_url,
-					link: 'https://twitter.com/neutralthoughts/status/499062476063776768',
+					link: 'https://twitter.com/#!/' + tweet.user.id + '/status/' + tweet._id + '/',
 					category: 'politician',
 					followers: tweet.user.followers_count
 	        	}
