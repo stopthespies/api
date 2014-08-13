@@ -2,8 +2,10 @@
  * Bring down the tweets to the locals and parse them for relevance
  */
 
-var RUN_INTERVAL = 15000;
-var TWEETS_MATCH = '#RobinWilliams';
+var config = require(__dirname + '/../_config_');
+
+var RUN_INTERVAL = config.tweet_processor_interval;
+var TWEETS_MATCH = config.tweet_processor_match;
 
 //------------------------------------------------------------------------------
 
@@ -11,12 +13,7 @@ var async = require('async');
 var Twit = require('twit');
 var mongo = require(__dirname + '/../lib/database');
 
-var twit = new Twit({
-  consumer_key: process.env.TWITTER_CONSUMER_KEY,
-  consumer_secret: process.env.TWITTER_CONSUMER_SECRET,
-  access_token: process.env.TWITTER_ACCESS_TOKEN,
-  access_token_secret: process.env.TWITTER_ACCESS_SECRET
-});
+var twit = new Twit(config.twitterCreds);
 
 //------------------------------------------------------------------------------
 
@@ -54,7 +51,7 @@ function loadTweets(db, lastOffset)
 		return new Date(Date.parse(text.replace(/( +)/, ' UTC$1')));
 	}
 
-	twit.get('search/tweets', { q: TWEETS_MATCH, count: 100, since_id: lastOffset }, function(err, data, response) {
+	twit.get('search/tweets', { q: TWEETS_MATCH, count: config.tweet_processor_batch_size, since_id: lastOffset }, function(err, data, response) {
     	if (err) throw err;
 
     	console.log('Found ' + data.statuses.length + '.');

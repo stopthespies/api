@@ -1,9 +1,12 @@
 var mongo = require(__dirname + '/lib/database');
+var config = require(__dirname + '/_config_');
 var _ = require('lodash');
 
 module.exports = function(req, res) {
 	mongo.get().then(function(db) {
-		db.collection('tweets').find({"user.followers_count": {$gt: 10000}}).toArray(function(err, docs) {
+		// :TODO: pull and cache legislator twitter details to fill user category
+
+		db.collection('tweets').find({"user.followers_count": {$gt: config.tweet_follower_celebrity_count}}).toArray(function(err, docs) {
 			console.log(docs);
 	        var tweets = _.map(docs, function(tweet){
 	        	return {

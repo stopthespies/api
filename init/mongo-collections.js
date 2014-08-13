@@ -1,26 +1,13 @@
 var mongo = require(__dirname + '/../lib/database');
+var config = require(__dirname + '/../_config_');
 
 mongo.get().then(function(db) { initCollections(db); }, function(err) { throw err; });
 
 function initCollections(db)
 {
     var i,
-        collectionsAndIndexes = {				// CONFIGURE COLLECTIONS TO PREPOPULATE
-        	worker_state : [],
-            log_totals : [
-	            { calls : 1 },
-	            { emails : 1 },
-	            { views : 1 },
-            ],
-			tweets : [
-				{ followers_count : 1 },
-            ],
-        },
-        collectionRecords = {					// CONFIGURE RECORDS TO PREPOPULATE
-        	log_totals : [
-        		{ _id : 'overall_totals' }
-        	],
-        },
+        collectionsAndIndexes = config.mongoSetup.collectionsAndIndexes,
+        collectionRecords = config.mongoSetup.collectionRecords,
         running = 0;
 
     console.log("Connected to mongo, initing collections...");
