@@ -10,6 +10,9 @@ module.exports = {
 	tweet_processor_interval : 15000,
 	tweet_processor_batch_size : 100,
 	tweet_processor_match : '#ausprivacy',
+	tweet_processor_account_blacklist : [
+
+	],
 
 	twitterCreds : {
 		consumer_key: process.env.TWITTER_CONSUMER_KEY,

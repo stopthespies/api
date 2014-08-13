@@ -69,11 +69,17 @@ function loadTweets(db, lastOffset)
     			}
 	    	});
 
-    		// save all at once
+    		// save individually as we sometimes get the same tweet ID in different result sets (possibly due to updates, but unsure)
 	    	data.statuses.forEach(function(status) {
     		(function() {
     			++writesInProgress;
 	    		var u = status.user;
+
+	    		// check user blacklist
+	    		if (config.tweet_processor_account_blacklist.indexOf(u.screen_name) != -1) {
+	    			return;
+	    		}
+
 	    		var tweet = {
 	    			_id : "" + status.id,
 	    			created_at : parseTwitterDate(status.created_at),
@@ -91,6 +97,7 @@ function loadTweets(db, lastOffset)
 	    				profile_image_url : u.profile_image_url.replace(/^https?:/i, ''),
 	    			},
 	    		};
+
 	    		coll.save(tweet, {w : 1}, function(err, res) {
 		    		if (err) throw err;
 
