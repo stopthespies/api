@@ -5,7 +5,8 @@ module.exports = function(req, response) {
 		db.collection('log_totals').find({_id : 'overall_totals'}, function(err, res) {
 			if (err) {
 				response.jsonp(false);
-				throw err;
+				console.warn("Error reading mongo (totals):", err);
+				return;
 			}
 			res.toArray(function(err, res) {
 				response.jsonp(res[0]);
