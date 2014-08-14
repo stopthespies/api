@@ -17,8 +17,9 @@
   },
   "homepage": "https://github.com/stopthespies/api",
   "dependencies": {
-    "cors": "^2.4.1",
-    "lodash": "^2.4.1",
+  	"async": "0.9.0",
+    "cors": "2.4.1",
+    "lodash": "2.4.1",
     "express": "4.8.3",
     "promise": "5.0.0",
     "mongodb": "1.4.8",
