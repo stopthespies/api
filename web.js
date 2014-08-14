@@ -19,17 +19,17 @@ mongo.get().then(function(db) {
             message: 'hello world.'
         });
     });
-    app.get('/stats', stats); // Retrieve statistics
+    app.get('/stats', stats); // Retrieve global aggregate statistics
 
     app.get('/log', log); // Used for logging
 
-    app.get('/tweets', tweets);
+    app.get('/tweets', tweets);	// Read supporter tweets
 
-    app.post('/email', email);
+    app.post('/email', email);	// Send campaign email
 
 
 
-    var port = Number(process.env.PORT || 5000);
+    var port = Number(config.server_port || 5000);
     app.listen(port, function() {
         console.log('Listening on ' + port);
     });

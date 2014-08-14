@@ -1,8 +1,11 @@
 /**
  * Config for backend limits, thresholds, database etc
  * Also a layer of indirection above env variables to allow easy overrides during dev.
+ *
+ * :TODO: prepopulate legislator info into mongo from source data
  */
 module.exports = {
+	server_port : process.env.PORT,
 	mongo_connection_uri : process.env.MONGOHQ_URL,
 
 	tweet_follower_celebrity_count : 10000,
