@@ -5,6 +5,7 @@ var _ = require('lodash');
 module.exports = function(req, res) {
 	mongo.get().then(function(db) {
 		// :TODO: pull and cache legislator twitter details to fill user category
+		// :TODO: limit response size & order by time
 
 		db.collection('tweets').find({}).toArray(function(err, docs) {
 		//db.collection('tweets').find({"user.followers_count": {$gt: config.tweet_follower_celebrity_count}}).toArray(function(err, docs) {
