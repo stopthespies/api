@@ -1,5 +1,4 @@
-var express = require('express');
-var app = express();
+var app = require('express.io')();
 var cors = require('cors')
 
 var log = require('./log');
@@ -8,8 +7,10 @@ var stats = require('./stats');
 var email = require('./email');
 
 var mongo = require(__dirname + '/lib/database');
+var config = require(__dirname + '/_config_');
 
 app.use(cors());
+app.http().io();
 
 
 mongo.get().then(function(db) {
@@ -27,9 +28,7 @@ mongo.get().then(function(db) {
 
     app.post('/email', email);	// Send campaign email
 
-
-
-    var port = Number(config.server_port || 5000);
+    var port = config.server_port || 5000;
     app.listen(port, function() {
         console.log('Listening on ' + port);
     });
