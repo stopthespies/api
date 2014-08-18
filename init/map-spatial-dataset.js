@@ -33,7 +33,7 @@ var csvIdxs = {
 	0 : 'type',
 	2 : 'name',
 	3 : 'electorate',
-	13 : 'member_id',
+	12 : 'member_id',
 };
 
 var states = {
@@ -148,8 +148,8 @@ function mergeFeature(feat, member)
 	return {
 		type : feat.type,
 		properties : {
-			electorate : feat.ELECT_DIV,
-			state : feat.STATE,
+			electorate : feat.properties.ELECT_DIV,
+			state : feat.properties.STATE,
 			member_id : member.member_id,
 		},
 		geometry : feat.geometry,
