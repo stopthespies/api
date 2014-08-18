@@ -18,6 +18,7 @@
   "homepage": "https://github.com/stopthespies/api",
   "dependencies": {
   	"async": "0.9.0",
+  	"csv": "0.4.0",
     "cors": "2.4.1",
     "express.io": "1.1.13",
     "lodash": "2.4.1",
