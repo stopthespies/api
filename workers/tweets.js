@@ -51,6 +51,7 @@ function loadTweets(db, lastOffset)
 	}
 
 	twit.get('search/tweets', { q: TWEETS_MATCH, count: config.tweet_processor_batch_size }, function(err, data, response) {
+		console.log(arguments);
     	if (err) throw err;
 
     	console.log('Found ' + data.statuses.length + '.');
