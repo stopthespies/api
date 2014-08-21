@@ -50,7 +50,7 @@ function loadTweets(db, lastOffset)
 		return new Date(Date.parse(text.replace(/( +)/, ' UTC$1')));
 	}
 
-	twit.get('search/tweets', { q: TWEETS_MATCH, count: config.tweet_processor_batch_size, since_id: lastOffset }, function(err, data, response) {
+	twit.get('search/tweets', { q: TWEETS_MATCH, count: config.tweet_processor_batch_size }, function(err, data, response) {
     	if (err) throw err;
 
     	console.log('Found ' + data.statuses.length + '.');

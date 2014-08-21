@@ -10,6 +10,7 @@ module.exports = function(req, res) {
 		db.collection('tweets').find({}).toArray(function(err, docs) {
 		//db.collection('tweets').find({"user.followers_count": {$gt: config.tweet_follower_celebrity_count}}).toArray(function(err, docs) {
 			console.log(docs);
+
 	        var tweets = _.map(docs, function(tweet){
 	        	return {
 					tweet: tweet.text,

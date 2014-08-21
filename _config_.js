@@ -8,7 +8,7 @@ module.exports = {
 	server_port : process.env.PORT,
 	mongo_connection_uri : process.env.MONGOHQ_URL,
 
-	tweet_follower_celebrity_count : 10000,
+	tweet_follower_celebrity_count : 10,
 
 	tweet_processor_interval : 15000,
 	tweet_processor_batch_size : 100,
