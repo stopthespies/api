@@ -8,7 +8,7 @@ module.exports = function(req, res) {
 		// :TODO: limit response size & order by time
 		var options = {
 		    "limit": 200,
-		    "sort": "tweet.user.followers_count"
+		    "sort": "user.followers_count"
 		}
 		db.collection('tweets').find({}, options).toArray(function(err, docs) {
 		//db.collection('tweets').find({"user.followers_count": {$gt: config.tweet_follower_celebrity_count}}).toArray(function(err, docs) {
