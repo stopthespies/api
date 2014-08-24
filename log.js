@@ -102,6 +102,9 @@ module.exports = function() {
 
         console.log("LOG A "+event_type+" EVENT", query);
 
+        // send application event
+        this.io.broadcast(event_type, legislators || []);
+
         mongo.get().then(
             function onSuccess(db) {
                 sendToMongo(query, event_type, db);
