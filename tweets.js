@@ -5,6 +5,7 @@ var _ = require('lodash');
 module.exports = function(req, res) {
 	mongo.get().then(function(db) {
 		// :TODO: pull and cache legislator twitter details to fill user category
+		// :TODO: move this munging code to the processor to make reads quicker and limit the tweet metadata we're storing
 		// :TODO: limit response size & order by time
 		var options = {
 		    "limit": 200,
@@ -29,17 +30,6 @@ module.exports = function(req, res) {
 		    res.jsonp(tweets);
 
         });
-
-        /*
-		var tweets = [{
-			tweet: 'I think we should eat book cases #stopthespies What do you think?',
-			handle: 'neutralthoughts',
-			avatar: 'https://pbs.twimg.com/profile_images/488579015507050497/QvG1ArTx_400x400.jpeg',
-			link: 'https://twitter.com/neutralthoughts/status/499062476063776768',
-			category: 'politician',
-			followers: 1000
-		}];
-		*/
 	}, function(err) {
 		throw err;
 	});
