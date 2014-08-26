@@ -149,8 +149,9 @@ function mergeFeature(feat, member)
 		type : feat.type,
 		properties : {
 			electorate : feat.properties.ELECT_DIV,
-			state : feat.properties.STATE,
 			member_id : member.member_id,
+			state : feat.properties.STATE,
+			area_sqkm : feat.properties.AREA_SQKM
 		},
 		geometry : feat.geometry,
 	};
