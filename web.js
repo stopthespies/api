@@ -5,10 +5,10 @@ var mongo = require(__dirname + '/lib/database');
 var config = require(__dirname + '/_config_');
 
 // request handlers
-var log = require('./log');
-var tweets = require('./tweets');
-var stats = require('./stats');
-var email = require('./email');
+var log = require(__dirname + '/routes/log');
+var tweets = require(__dirname + '/routes/tweets');
+var stats = require(__dirname + '/routes/stats');
+var email = require(__dirname + '/routes/email');
 
 //------------------------------------------------------------------------------
 

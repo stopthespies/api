@@ -1,4 +1,4 @@
-var mongo = require(__dirname + '/lib/database');
+var mongo = require(__dirname + '/../lib/database');
 
 module.exports = function(req, response) {
 	mongo.get().then(function(db) {

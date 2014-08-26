@@ -22,8 +22,8 @@
 
 var async = require('async');
 
-var mongo = require(__dirname + '/lib/database');
-var config = require(__dirname + '/_config_');
+var mongo = require(__dirname + '/../lib/database');
+var config = require(__dirname + '/../_config_');
 
 var EVENT_TYPES = ['views', 'calls', 'emails', 'tweets', 'facebooks'];
 var COLLECTION_NAME = 'log_totals';
