@@ -29,6 +29,8 @@ var EVENT_TYPES = ['views', 'calls', 'emails', 'tweets', 'facebooks'];
 var COLLECTION_NAME = 'log_totals';
 var OVERALL_TOTALS_ID = 'overall_totals';
 
+var TIMES_COLLECTION_NAME = 'log_event_times';
+
 module.exports = function() {
 
     function sendToMongo(query, event_type, db) {
@@ -36,18 +38,30 @@ module.exports = function() {
         var inc_update = {$inc: {} };
         inc_update['$inc'][event_type] = 1;
 
+        var eventLog = {
+        	type : event_type,
+        	time : new Date()
+        };
+
         db.collection(COLLECTION_NAME).update(
             query,
             inc_update,
             function(err, result) {
                 if (err) {
-                    console.warn("Mongo write failed:", query, inc_update);
+                    console.warn("Mongo aggregate write failed:", query, inc_update);
                     return;
                 }
 
                 console.log("Added event to MongoDB");
             }
         );
+
+        db.collection(TIMES_COLLECTION_NAME).insert(eventLog, function(err, res) {
+            if (err) {
+                console.warn("Mongo log write failed:", eventLog);
+                return;
+            }
+        });
     }
 
     function success(res) {
