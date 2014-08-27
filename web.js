@@ -64,6 +64,12 @@ mongo.get().then(function(db) {
     	log.call(app, req);
 	});
 
+
+    // website events
+    app.io.route('websites', function(req) {
+    	websites.call(app, req);
+	});
+
 	//--------------------------------------------------------------------------
 	// init server
 
