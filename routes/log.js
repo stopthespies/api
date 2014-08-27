@@ -64,33 +64,33 @@ module.exports = function() {
         });
     }
 
-    function success(res) {
-        res.jsonp({
+    function success(req) {
+        req.io.respond({
             message: 'Event logged'
         });
     }
 
-    function fail(res) {
-        res.jsonp({
+    function fail(req) {
+        req.io.respond({
             error: 'Failed to log'
         });
     }
 
-    function invalidRequest(res) {
-        res.jsonp({
+    function invalidRequest(req) {
+        req.io.respond({
             error: 'Invalid request'
         });
     }
 
-    function main(req, res) {
+    function main(req) {
 
-        var event_type = req.query.event;
-        var legislators = req.query.legislators || null;
+        var event_type = req.data.event;
+        var legislators = req.data.legislators || null;
         var query;
 
         if (EVENT_TYPES.indexOf(event_type) == -1) {
-        	console.warn("HACK ATTEMPT:", req);	// let Forever catch these
-	        invalidRequest(res);
+        	console.warn("HACK ATTEMPT:", req.data);	// let Forever catch these
+	        invalidRequest(req);
         	return;
         }
 
@@ -109,8 +109,8 @@ module.exports = function() {
 	        }
 		} catch (e) {
 			// validation error.
-        	console.warn("HACK ATTEMPT:", req);	// let Forever catch these
-	        invalidRequest(res);
+        	console.warn("HACK ATTEMPT:", req.data);	// let Forever catch these
+	        invalidRequest(req);
 	        return;
 		}
 
@@ -122,10 +122,10 @@ module.exports = function() {
         mongo.get().then(
             function onSuccess(db) {
                 sendToMongo(query, event_type, db);
-                success(res);	// do not wait for write acknowledgement
+                success(req);	// do not wait for write acknowledgement
             },
             function onErr(err) {
-                fail(res);
+                fail(req);
             }
         );
     };

@@ -2,7 +2,7 @@ var mongo = require(__dirname + '/../lib/database');
 var config = require(__dirname + '/../_config_');
 var _ = require('lodash');
 
-module.exports = function(req, res) {
+module.exports = function(req) {
 	mongo.get().then(function(db) {
 		// :TODO: pull and cache legislator twitter details to fill user category
 		// :TODO: move this munging code to the processor to make reads quicker and limit the tweet metadata we're storing
@@ -27,7 +27,7 @@ module.exports = function(req, res) {
 	        	}
 	        });
 	        console.log(tweets);
-		    res.jsonp(tweets);
+		    req.io.respond(tweets);
 
         });
 	}, function(err) {
