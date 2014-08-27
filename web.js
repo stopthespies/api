@@ -44,11 +44,13 @@ mongo.get().then(function(db) {
 
 	// read global stats
 	app.io.route('stats', function(req) {
+		console.log('read stats');
     	stats.call(app, req);
 	});
 
 	// read tweets
 	app.io.route('tweets', function(req) {
+		console.log('read tweets');
     	tweets.call(app, req);
 	});
 

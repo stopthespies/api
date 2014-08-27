@@ -56,6 +56,7 @@ module.exports = function() {
             }
         );
 
+        // :TODO: these logs need to be differentiatable per legislator they target
         db.collection(TIMES_COLLECTION_NAME).insert(eventLog, function(err, res) {
             if (err) {
                 console.warn("Mongo log write failed:", eventLog);

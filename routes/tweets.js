@@ -26,8 +26,8 @@ module.exports = function(req) {
 					followers: tweet.user.followers_count
 	        	}
 	        });
-	        console.log(tweets);
-		    req.io.respond(tweets);
+	        // console.log(tweets);
+		    req.io.emit('get_tweets', tweets);
 
         });
 	}, function(err) {
