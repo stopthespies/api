@@ -4,15 +4,18 @@ var cors = require('cors');
 var mongo = require(__dirname + '/lib/database');
 var config = require(__dirname + '/_config_');
 
+var bodyParser = require('body-parser');
 // request handlers
 var log = require(__dirname + '/routes/log');
 var tweets = require(__dirname + '/routes/tweets');
 var stats = require(__dirname + '/routes/stats');
 var email = require(__dirname + '/routes/email');
+var websites = require(__dirname + '/routes/websites');
 
 //------------------------------------------------------------------------------
 
 app.use(cors());
+app.use(bodyParser.json())
 app.http().io();
 
 mongo.get().then(function(db) {
@@ -39,6 +42,10 @@ mongo.get().then(function(db) {
     	req.io.route('tweets');
 	});
 
+    app.post('/websites', function(req, res) {
+    	req.io.route('websites');
+	});
+
 	//--------------------------------------------------------------------------
 	// socket events
 
@@ -57,6 +64,12 @@ mongo.get().then(function(db) {
     // log events
     app.io.route('log', function(req) {
     	log.call(app, req);
+	});
+
+
+    // website events
+    app.io.route('websites', function(req) {
+    	websites.call(app, req);
 	});
 
 	//--------------------------------------------------------------------------

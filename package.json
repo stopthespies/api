@@ -17,13 +17,14 @@
   },
   "homepage": "https://github.com/stopthespies/api",
   "dependencies": {
-  	"async": "0.9.0",
-  	"csv": "0.4.0",
+    "async": "0.9.0",
+    "body-parser": "^1.6.5",
     "cors": "2.4.1",
+    "csv": "0.4.0",
     "express.io": "1.1.13",
     "lodash": "2.4.1",
-    "promise": "5.0.0",
     "mongodb": "1.4.8",
+    "promise": "5.0.0",
     "twit": "1.1.18"
   }
 }
