@@ -46,18 +46,28 @@ module.exports = function(req) {
 			// celebs
 			[{"user.followers_count": {$gte : config.tweet_follower_celebrity_count}}, searchOptions],
 			// :TODO: legislators
-			// [{}, searchOptions],
+			[{}, searchOptions],
+			// :SHONK: this one is the thing I'm going to use to make a count()
+			'COUNT'
 		];
 
 		async.map(queries, function(query, callback) {
-			__search(db, query[0], query[1], callback);
+			if ('COUNT' === query) {
+				db.collection('tweets').count(callback);
+			} else {
+				__search(db, query[0], query[1], callback);
+			}
 		}, function(err, results) {
 			if (err) throw err;
 
 			var tweets = {
-				'public' : results[0],
-				'celebrities' : results[1],
-				'legislators' : [] // :TODO:
+				'latest' : {
+					'public' : results[0],
+					'celebrities' : results[1],
+					'legislators' : results[2], // :TODO:
+				},
+				'offset' : 0,	// :TODO: when we need paging
+				'total' : results[3],
 			};
 		    req.io.emit('get_tweets', tweets);
 		});
