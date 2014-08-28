@@ -1,19 +1,21 @@
 var mongo = require(__dirname + '/../lib/database');
 var config = require(__dirname + '/../_config_');
 var _ = require('lodash');
+var async = require('async');
 
-module.exports = function(req) {
-	mongo.get().then(function(db) {
-		// :TODO: pull and cache legislator twitter details to fill user category
-		// :TODO: move this munging code to the processor to make reads quicker and limit the tweet metadata we're storing
-		// :TODO: limit response size & order by time
-		var options = {
-		    "limit": 200,
-		    "sort": [["user.followers_count", "desc"]]
+
+function __search(db, query, options, callback)
+{
+	db.collection('tweets').find(query, options || null, function(err, res) {
+		if (err) {
+			callback(err);
+			return;
 		}
-		db.collection('tweets').find({}, options).toArray(function(err, docs) {
-		//db.collection('tweets').find({"user.followers_count": {$gt: config.tweet_follower_celebrity_count}}).toArray(function(err, docs) {
-			console.log(docs);
+		res.toArray(function(err, docs) {
+			if (err) {
+				callback(err);
+				return;
+			}
 
 	        var tweets = _.map(docs, function(tweet){
 	        	return {
@@ -22,14 +24,43 @@ module.exports = function(req) {
 					avatar: tweet.user.profile_image_url,
 					link: 'https://twitter.com/#!/' + tweet.user.id + '/status/' + tweet._id + '/',
 					retweet_link: 'https://twitter.com/intent/retweet?tweet_id=' + tweet._id,
-					category: 'politician',
+					category: 'politician',	// :TODO:
 					followers: tweet.user.followers_count
 	        	}
 	        });
-	        // console.log(tweets);
-		    req.io.emit('get_tweets', tweets);
 
-        });
+	        callback(null, tweets);
+		});
+	});
+}
+
+// :TODO: pull and cache legislator twitter details to query against tweets
+
+module.exports = function(req) {
+	mongo.get().then(function(db) {
+		var searchOptions = {sort : [["created_at", 'desc']], limit : 200};	// :TODO: make configurable
+
+		var queries = [
+			// normal users
+			[{"user.followers_count": {$lt : config.tweet_follower_celebrity_count}}, searchOptions],
+			// celebs
+			[{"user.followers_count": {$gte : config.tweet_follower_celebrity_count}}, searchOptions],
+			// :TODO: legislators
+			// [{}, searchOptions],
+		];
+
+		async.map(queries, function(query, callback) {
+			__search(db, query[0], query[1], callback);
+		}, function(err, results) {
+			if (err) throw err;
+
+			var tweets = {
+				'public' : results[0],
+				'celebrities' : results[1],
+				'legislators' : [] // :TODO:
+			};
+		    req.io.emit('get_tweets', tweets);
+		});
 	}, function(err) {
 		throw err;
 	});
