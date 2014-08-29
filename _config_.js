@@ -12,7 +12,7 @@ module.exports = {
 
 	tweet_processor_interval : 15000,
 	tweet_processor_batch_size : 100,
-	tweet_processor_match : '@eff',
+	tweet_processor_match : '#stopthespies',
 	tweet_processor_account_blacklist : [
 
 	],
