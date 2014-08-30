@@ -104,6 +104,20 @@ module.exports = function() {
 		        		query = { _id : OVERALL_TOTALS_ID };
 		        	}
 	       			break;
+                case 'emails':
+                    if (legislators) {
+                        query = { _id : { $in : legislators.split(',') } };
+                    } else {
+                        query = { _id : OVERALL_TOTALS_ID };
+                    }
+                    break;
+                case 'calls':
+                    if (legislators) {
+                        query = { _id : { $in : legislators.split(',') } };
+                    } else {
+                        query = { _id : OVERALL_TOTALS_ID };
+                    }
+                    break;
 	        	default:
 	        		query = { _id : legislators };
 	       			break;
