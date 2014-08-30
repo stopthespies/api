@@ -79,7 +79,7 @@ mongo.get().then(function(db) {
 	//--------------------------------------------------------------------------
 	// broadcast daemons
 
-	logBroadcaster.call(app);
+	logBroadcaster(app);
 
 	//--------------------------------------------------------------------------
 	// init server
