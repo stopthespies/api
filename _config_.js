@@ -6,6 +6,7 @@
  */
 module.exports = {
 	server_port : process.env.PORT,
+	broadcast_logs_interval : process.env.SOCKET_BROADCAST_THROTTLE || 1000,	// how often to query latest global events and send to clients
 	mongo_connection_uri : process.env.MONGOHQ_URL,
 
 	tweet_follower_celebrity_count : 10,
@@ -27,21 +28,25 @@ module.exports = {
 	mongoSetup : {
 		// configure collections to prepopulate
 		collectionsAndIndexes : {
-        	worker_state : [],
-            log_totals : [
-	            { calls : 1 },
-	            { emails : 1 },
-	            { views : 1 },
-            ],
+    	worker_state : [],
+      log_totals : [
+        { calls : 1 },
+        { emails : 1 },
+        { views : 1 },
+      ],
+      log_event_times : [
+        { time : 1 },
+        { type : 1 },
+      ],
 			tweets : [
 				{ followers_count : 1 },
-            ],
-        },
-        // configure records to prepopulate
-        collectionRecords : {
-        	log_totals : [
-        		{ _id : 'overall_totals' }
-        	],
-        },
+      ],
     },
+    // configure records to prepopulate
+    collectionRecords : {
+    	log_totals : [
+    		{ _id : 'overall_totals' }
+    	],
+    },
+  },
 };

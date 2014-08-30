@@ -5,12 +5,16 @@ var mongo = require(__dirname + '/lib/database');
 var config = require(__dirname + '/_config_');
 
 var bodyParser = require('body-parser');
+
 // request handlers
 var log = require(__dirname + '/routes/log');
 var tweets = require(__dirname + '/routes/tweets');
 var stats = require(__dirname + '/routes/stats');
 var email = require(__dirname + '/routes/email');
 var websites = require(__dirname + '/routes/websites');
+
+// io event broadcasters
+var logBroadcaster = require(__dirname + '/routes/broadcast/logs');
 
 //------------------------------------------------------------------------------
 
@@ -71,6 +75,11 @@ mongo.get().then(function(db) {
     app.io.route('websites', function(req) {
     	websites.call(app, req);
 	});
+
+	//--------------------------------------------------------------------------
+	// broadcast daemons
+
+	logBroadcaster(app);
 
 	//--------------------------------------------------------------------------
 	// init server
