@@ -36,7 +36,7 @@ module.exports = function(app)
               theTotals.emails !== totals.emails ||
               theTotals.calls !== totals.calls) {
             console.log('broadcast stats');
-            app.io.broadcast('get_stats', totals);
+            app.io.broadcast('get_stats', [totals]);
           }
 
           theTotals = totals;
