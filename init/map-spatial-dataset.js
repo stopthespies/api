@@ -16,25 +16,13 @@
  * put the servers behind it to run really exact queries, though. We would have to check that
  * there are no intersecting polygon arcs however as these do not pass index checks.
  *
- * Second path is a CSV of the data from the members / member IDs spreadsheet @rolandnsharp has.
- * You can edit column indexes and state name / ID mappings easily at the top if the format changes.
- * :TODO: link this data when final and publicly available somewhere
- *
  * @package StopTheSpies API
  * @author  Sam Pospischil <pospi@spadgos.com>
  * @since   2014-08-18
  */
 
-var geoJSON = require(__dirname + '/../../website/map/COM20111216_ELB_region.json');
-var csvFile = __dirname + '/reps.csv';
+var geoJSON = require(__dirname + '/../../website/map/electorates.json');
 var destFile = __dirname + '/member_electorates.json';
-
-var csvIdxs = {
-	0 : 'type',
-	2 : 'name',
-	3 : 'electorate',
-	12 : 'member_id',
-};
 
 var states = {
 	'NT' : [ "northern territory" ],
@@ -47,46 +35,41 @@ var states = {
 	'ACT' : [ "australian capital territory" ],
 };
 
+var members = require('au-legislator-contacts-csv');
+
 //------------------------------------------------------------------------------
 
 var fs = require('fs');
-var csv = require('csv');
 
 var countFails = 0, countSuccesses = 0, countDupes = 0,
 	membersCount = 0, senatorsCount = 0, repsCount = 0;
 
-// read CSV. Keep this simple it's a small file
-
-var parser = csv.parse();
-var csvStream = fs.createReadStream(csvFile), csvOpened = false;
-
 var outputFeatures = [];
 
-csvStream.on('data', function readCSV(data) {
-	parser.write(data);
+members.get().then(function(reps) {
+	process.nextTick(function() {
+		reps.forEach(matchGeoJSON);
+		outputResult();
+	});
+}, function(err) {
+	console.error('Problem loading legislators CSV data');
+	throw err;
 });
-parser.on('readable', function parseCSV() {
-	while (data = parser.read()) {
-		matchGeoJSON(data);
-	}
-});
-csvStream.on('end', outputResult);
 
 // match records against reference place names
 
-function matchGeoJSON(theHonorableMember)	// ლ(ಠ益ಠლ)
+function matchGeoJSON(member)	// ლ(ಠ益ಠლ)
 {
-	var member = {}, i;
-
-	for (i in csvIdxs) {
-		member[csvIdxs[i]] = theHonorableMember[i] || null;
-	}
-
 	++membersCount;
 
-	if (member.type == 'senate') {
+	if (!member.electorate) {
+		console.log('empty record, ignoring');
+		return;
+	}
+
+	if (member.house === 'senate') {
 		++senatorsCount;
-		console.log('Ignore senator: ' + member.name);
+		console.log('Ignore senator: ' + member.full_name);
 		return;
 	}
 	++repsCount;
@@ -117,7 +100,7 @@ function matchGeoJSON(theHonorableMember)	// ლ(ಠ益ಠლ)
 
 	if (!memberState) {
 		++countFails;
-		console.error('Member ' + member.name + ' [' + member.member_id + '] has unknown state: ' + member.electorate);
+		console.error('Member ' + member.full_name + ' [' + member.openaus_id + '] has unknown state: ' + member.electorate);
 		return;
 	}
 
@@ -127,7 +110,7 @@ function matchGeoJSON(theHonorableMember)	// ლ(ಠ益ಠლ)
 		if (memberState == feat.properties.STATE) {
 			if (feat.properties.ELECT_DIV.match(new RegExp('^' + ward + '$', 'i'))) {
 				if (dupeCheck) {
-					console.error('Member ' + member.name + ' [' + member.member_id + '] matches multiple areas: ' + member.electorate);
+					console.error('Member ' + member.full_name + ' [' + member.openaus_id + '] matches multiple areas: ' + member.electorate);
 					++countDupes;
 					--countSuccesses;
 					return;
@@ -149,7 +132,7 @@ function mergeFeature(feat, member)
 		type : feat.type,
 		properties : {
 			electorate : feat.properties.ELECT_DIV,
-			member_id : member.member_id,
+			member_id : member.openaus_id,
 			state : feat.properties.STATE,
 			area_sqkm : feat.properties.AREA_SQKM
 		},
