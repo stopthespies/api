@@ -117,8 +117,12 @@ module.exports = function() {
 
         console.log("LOG A "+event_type+" EVENT", query);
 
-        // send application event
-        this.io.broadcast(event_type, legislators || []);
+        // send application events for legislators only as we don't need to keep visible totals
+        // for them onscreen - their stats are only shown to a user after being loaded at that
+        // point in time. Global stats sent by broadcast/logs.js
+        if (legislators) {
+          this.io.broadcast(event_type, legislators);
+        }
 
         mongo.get().then(
             function onSuccess(db) {
