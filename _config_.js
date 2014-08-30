@@ -27,21 +27,25 @@ module.exports = {
 	mongoSetup : {
 		// configure collections to prepopulate
 		collectionsAndIndexes : {
-        	worker_state : [],
-            log_totals : [
-	            { calls : 1 },
-	            { emails : 1 },
-	            { views : 1 },
-            ],
+    	worker_state : [],
+      log_totals : [
+        { calls : 1 },
+        { emails : 1 },
+        { views : 1 },
+      ],
+      log_event_times : [
+        { time : 1 },
+        { type : 1 },
+      ],
 			tweets : [
 				{ followers_count : 1 },
-            ],
-        },
-        // configure records to prepopulate
-        collectionRecords : {
-        	log_totals : [
-        		{ _id : 'overall_totals' }
-        	],
-        },
+      ],
     },
+    // configure records to prepopulate
+    collectionRecords : {
+    	log_totals : [
+    		{ _id : 'overall_totals' }
+    	],
+    },
+  },
 };
