@@ -6,6 +6,7 @@
  */
 module.exports = {
 	server_port : process.env.PORT,
+	broadcast_logs_interval : process.env.SOCKET_BROADCAST_THROTTLE || 1000,	// how often to query latest global events and send to clients
 	mongo_connection_uri : process.env.MONGOHQ_URL,
 
 	tweet_follower_celebrity_count : 10,
