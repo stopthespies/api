@@ -1,7 +1,8 @@
 var mongo = require(__dirname + '/../lib/database');
 var config = require(__dirname + '/../_config_');
-var _ = require('lodash');
 var async = require('async');
+
+var memberCSV = require('au-legislator-contacts-csv');
 
 
 function __search(db, query, options, callback)
@@ -17,14 +18,13 @@ function __search(db, query, options, callback)
 				return;
 			}
 
-	        var tweets = _.map(docs, function(tweet){
+	        var tweets = docs.map(function(tweet){
 	        	return {
 					tweet: tweet.text,
 					handle: tweet.user.screen_name,
 					avatar: tweet.user.profile_image_url,
 					link: 'https://twitter.com/#!/' + tweet.user.id + '/status/' + tweet._id + '/',
 					retweet_link: 'https://twitter.com/intent/retweet?tweet_id=' + tweet._id,
-					category: 'politician',	// :TODO:
 					followers: tweet.user.followers_count
 	        	}
 	        });
@@ -38,16 +38,33 @@ function __search(db, query, options, callback)
 
 module.exports = function(req) {
 	mongo.get().then(function(db) {
+	memberCSV.get().then(function(members) {
+
+
+		// reduce members down to twatter names
+		members = members.map(function(m) {
+			return m.twitter ? m.twitter.match(/https?:\/\/(www\.)?twitter.com\/(#!\/)?(.*?)(\/|$)/)[3] : false;
+		}).filter(function(m) {
+			return !!m;
+		});
+
 		var searchOptions = {sort : [["created_at", 'desc']], limit : 200};	// :TODO: make configurable
 
 		var queries = [
 			// normal users
-			[{"user.followers_count": {$lt : config.tweet_follower_celebrity_count}}, searchOptions],
+			[{
+				"user.followers_count": {$lt : config.tweet_follower_celebrity_count},
+				"user.screen_name": {$nin : members},
+			}, searchOptions],
 			// celebs
-			[{"user.followers_count": {$gte : config.tweet_follower_celebrity_count}}, searchOptions],
-			// :TODO: legislators
-			[{}, searchOptions],
-			// :SHONK: this one is the thing I'm going to use to make a count()
+			[{
+				"user.followers_count": {$gte : config.tweet_follower_celebrity_count},
+				"user.screen_name": {$nin : members},
+			}, searchOptions],
+			[{
+				"user.screen_name": {$in : members}
+			}, searchOptions],
+			// :SHONK: random string ID used to change inner behaviour of the below
 			'COUNT'
 		];
 
@@ -71,7 +88,11 @@ module.exports = function(req) {
 			};
 		    req.io.emit('get_tweets', tweets);
 		});
+
+
 	}, function(err) {
+		throw err;
+	})}, function(err) {
 		throw err;
 	});
 
