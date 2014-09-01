@@ -81,7 +81,7 @@ module.exports = function(req) {
 				'latest' : {
 					'public' : results[0],
 					'celebrities' : results[1],
-					'legislators' : results[2], // :TODO:
+					'legislators' : results[2],
 				},
 				'offset' : 0,	// :TODO: when we need paging
 				'total' : results[3],
