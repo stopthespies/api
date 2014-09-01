@@ -5,7 +5,7 @@
  *
  * 'views'
  * 	- can be passed parameterless to register a pageview
- *  - can come with a 'legislators' comma-separated string of legislator IDs
+ *  - can come with a 'legislators' array of legislator IDs
  *
  * 'calls'
  * 	- must come with a 'legislators' parameter containing only a single ID
@@ -99,21 +99,21 @@ module.exports = function() {
 	        switch (event_type) {
 	        	case 'views':
 		        	if (legislators) {
-		        		query = { _id : { $in : legislators.split(',') } };
+		        		query = { _id : { $in : legislators } };
 		        	} else {
 		        		query = { _id : OVERALL_TOTALS_ID };
 		        	}
 	       			break;
                 case 'emails':
                     if (legislators) {
-                        query = { _id : { $in : legislators.split(',') } };
+                        query = { _id : { $in : legislators } };
                     } else {
                         query = { _id : OVERALL_TOTALS_ID };
                     }
                     break;
                 case 'calls':
                     if (legislators) {
-                        query = { _id : { $in : legislators.split(',') } };
+                        query = { _id : { $in : legislators } };
                     } else {
                         query = { _id : OVERALL_TOTALS_ID };
                     }
