@@ -49,5 +49,6 @@ module.exports = {
 				{ _id : 'overall_totals' }
 			],
 		},
+		totalsTable : 'log_totals',	// this array of collectionRecords gets legislator ids appended to it
 	},
 };

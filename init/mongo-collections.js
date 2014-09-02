@@ -1,14 +1,29 @@
 var mongo = require(__dirname + '/../lib/database');
 var config = require(__dirname + '/../_config_');
+var members = require('au-legislator-contacts-csv');
 
-mongo.get().then(function(db) { initCollections(db); }, function(err) { throw err; });
+members.get().then(function(members) { initDatabase(members); }, function(err) { throw err; });
 
-function initCollections(db)
+function initDatabase(members)
+{
+	mongo.get().then(function(db) { initCollections(db, members); }, function(err) { throw err; });
+}
+
+function initCollections(db, members)
 {
     var i,
         collectionsAndIndexes = config.mongoSetup.collectionsAndIndexes,
         collectionRecords = config.mongoSetup.collectionRecords,
         running = 0;
+
+
+	// reduce members to openaus IDs
+	members = members.map(function(m) {
+		return (m.openaus_id && m.openaus_id !== 'null') ? { _id : m.openaus_id } : false;
+	}).filter(function(m) {
+		return m !== false;
+	});
+	collectionRecords[config.mongoSetup.totalsTable] = collectionRecords[config.mongoSetup.totalsTable].concat(members);
 
     console.log("Connected to mongo, initing collections...");
 
