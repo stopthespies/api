@@ -89,7 +89,7 @@ module.exports = function() {
         var legislators = req.data.legislators || null;
         var query;
 
-        if (!Array.isArray(legislators)) {
+        if (legislators && !Array.isArray(legislators)) {
         	legislators = [legislators];
         }
 
