@@ -89,6 +89,10 @@ module.exports = function() {
         var legislators = req.data.legislators || null;
         var query;
 
+        if (!Array.isArray(legislators)) {
+        	legislators = [legislators];
+        }
+
         if (EVENT_TYPES.indexOf(event_type) == -1) {
         	console.warn("HACK ATTEMPT:", req.data);	// let Forever catch these
 	        invalidRequest(req);
