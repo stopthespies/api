@@ -19,8 +19,8 @@
   "dependencies": {
     "async": "0.9.0",
     "body-parser": "^1.6.5",
-    "au-legislator-contacts-csv": "stopthespies/legislator-contacts-csv#master",
-    "tweets-mongodb-parser": "stopthespies/tweets-mongodb-parser#master",
+    "au-legislator-contacts-csv": "git://github.com/stopthespies/legislator-contacts-csv.git#master",
+    "tweets-mongodb-parser": "git://github.com/stopthespies/tweets-mongodb-parser.git#master",
     "cors": "2.4.1",
     "csv": "0.4.0",
     "express.io": "1.1.13",
