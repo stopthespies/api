@@ -45,16 +45,16 @@ mongo.get().then(function(db) {
 					return;
 				}
 				var tweets = docs;
-		        /*var tweets = docs.map(function(tweet){
+		        var tweets = docs.map(function(tweet){
 		        	return {
 						tweet: tweet.text,
 						handle: tweet.user.screen_name,
 						avatar: tweet.user.profile_image_url,
-						link: 'https://twitter.com/#!/' + tweet.user.id + '/status/' + tweet._id + '/',
-						retweet_link: 'https://twitter.com/intent/retweet?tweet_id=' + tweet._id,
+						link: 'https://twitter.com/#!/' + tweet.user.screen_name + '/status/' + (tweet.id_str || 'broken') + '/',
+						retweet_link: 'https://twitter.com/intent/retweet?tweet_id=' + (tweet.id_str|| 'broken'),
 						followers: tweet.user.followers_count
 		        	}
-		        });*/
+		        });
 
 		        response.send(tweets);
 			});
