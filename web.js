@@ -45,7 +45,7 @@ mongo.get().then(function(db) {
 					return;
 				}
 
-		        var tweets = docs.map(function(tweet){
+		        /*var tweets = docs.map(function(tweet){
 		        	return {
 						tweet: tweet.text,
 						handle: tweet.user.screen_name,
@@ -54,7 +54,7 @@ mongo.get().then(function(db) {
 						retweet_link: 'https://twitter.com/intent/retweet?tweet_id=' + tweet._id,
 						followers: tweet.user.followers_count
 		        	}
-		        });
+		        });*/
 
 		        response.send(tweets);
 			});
