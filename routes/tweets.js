@@ -48,7 +48,7 @@ module.exports = function(req) {
 			return !!m;
 		});
 
-		var searchOptions = {sort : [["created_at", 'desc']], limit : 200};	// :TODO: make configurable
+		var searchOptions = {sort : [["user.followers_count", 'desc']], limit : 60};	// :TODO: make configurable
 
 		var queries = [
 			// normal users
