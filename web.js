@@ -33,6 +33,34 @@ mongo.get().then(function(db) {
         		<a href="https://github.com/stopthespies/">https://github.com/stopthespies/</a>');
     });
 
+    app.get('/battleforthenet', function(req, response) {
+	    db.collection('tweets').find({}, {sort : [["created_at", 'desc']], limit : 200}, function(err, res) {
+			if (err) {
+				callback(err);
+				return;
+			}
+			res.toArray(function(err, docs) {
+				if (err) {
+					callback(err);
+					return;
+				}
+
+		        var tweets = docs.map(function(tweet){
+		        	return {
+						tweet: tweet.text,
+						handle: tweet.user.screen_name,
+						avatar: tweet.user.profile_image_url,
+						link: 'https://twitter.com/#!/' + tweet.user.id + '/status/' + tweet._id + '/',
+						retweet_link: 'https://twitter.com/intent/retweet?tweet_id=' + tweet._id,
+						followers: tweet.user.followers_count
+		        	}
+		        });
+
+		        response.send(tweets);
+			});
+		});
+    })
+
 	// emails are sent via POST
     app.post('/email', function(req, res) {
     	email.call(app, req, res);
