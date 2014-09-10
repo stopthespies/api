@@ -27,7 +27,7 @@ function __search(db, query, options, callback)
 	], callback)
 
 */
-	db.collection('tweets').distinct('user.screen_name', query, options || null, function(err, res) {
+	db.collection('tweets').find(query, options || null, function(err, res) {
 		if (err) {
 			callback(err);
 			return;
