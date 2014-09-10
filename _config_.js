@@ -13,7 +13,7 @@ module.exports = {
 
 	tweet_processor_interval : 15000,
 	tweet_processor_batch_size : 100,
-	tweet_processor_match : 'battleforthenet.com',
+	tweet_processor_match : 'battleforthenet.com OR #internetslowdown',
 	tweet_processor_account_blacklist : [
 
 	],
