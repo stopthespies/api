@@ -44,7 +44,7 @@ mongo.get().then(function(db) {
 					callback(err);
 					return;
 				}
-
+				var tweets = docs;
 		        /*var tweets = docs.map(function(tweet){
 		        	return {
 						tweet: tweet.text,
