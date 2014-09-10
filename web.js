@@ -49,6 +49,7 @@ mongo.get().then(function(db) {
 		        	return {
 						tweet: tweet.text,
 						handle: tweet.user.screen_name,
+						name: tweet.user.name,
 						avatar: tweet.user.profile_image_url,
 						link: 'https://twitter.com/#!/' + tweet.user.screen_name + '/status/' + (tweet.id_str || 'broken') + '/',
 						retweet_link: 'https://twitter.com/intent/retweet?tweet_id=' + (tweet.id_str|| 'broken'),
