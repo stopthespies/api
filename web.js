@@ -34,7 +34,7 @@ mongo.get().then(function(db) {
     });
 
     app.get('/battleforthenet', function(req, response) {
-	    db.collection('tweets').find({}, {sort : [["user.followers_count", 'desc']], limit : 200}, function(err, res) {
+	    db.collection('tweets').distinct('user.screen_name', {}, {sort : [["user.followers_count", 'desc']], limit : 200}, function(err, res) {
 			if (err) {
 				callback(err);
 				return;
