@@ -3,7 +3,7 @@ var app = require('express.io')();
 var cors = require('cors');
 var mongo = require(__dirname + '/lib/database');
 var config = require(__dirname + '/_config_');
-
+var  _ = require('lodash');
 var bodyParser = require('body-parser');
 
 // request handlers
@@ -34,7 +34,7 @@ mongo.get().then(function(db) {
     });
 
     app.get('/battleforthenet', function(req, response) {
-	    db.collection('tweets').find({}, {sort : [["user.followers_count", 'desc']], limit : 200}, function(err, res) {
+	    db.collection('tweets').find({}, {sort : [["user.followers_count", 'desc']], limit : 400}, function(err, res) {
 			if (err) {
 				callback(err);
 				return;
@@ -55,7 +55,7 @@ mongo.get().then(function(db) {
 						followers: tweet.user.followers_count
 		        	}
 		        });
-
+		        tweets = _.uniq(tweets, 'handle');
 		        response.send(tweets);
 			});
 		});
