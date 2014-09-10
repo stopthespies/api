@@ -62,6 +62,42 @@ mongo.get().then(function(db) {
 		});
     })
 
+    app.get('/battleforthenet.html', function(req, response) {
+	    db.collection('tweets').find({}, {sort : [["user.followers_count", 'desc']], limit : 400}, function(err, res) {
+			if (err) {
+				callback(err);
+				return;
+			}
+			res.toArray(function(err, docs) {
+				if (err) {
+					callback(err);
+					return;
+				}
+				var tweets = docs;
+		        var tweets = docs.map(function(tweet){
+		        	return {
+						tweet: tweet.text,
+						handle: tweet.user.screen_name,
+						name: tweet.user.name,
+						avatar: tweet.user.profile_image_url,
+						link: 'https://twitter.com/#!/' + tweet.user.screen_name + '/status/' + (tweet.id_str || 'broken') + '/',
+						retweet_link: 'https://twitter.com/intent/retweet?tweet_id=' + (tweet.id_str|| 'broken'),
+						followers: tweet.user.followers_count
+		        	}
+		        });
+		        var html = "<table><tbody>";
+		        tweets = _.uniq(tweets, 'handle');
+		        _.each(tweets, function(tweet){
+		        	html += '<tr><td><img src="'+tweet.avatar + '" /></td><td>' + tweet.handle + '</td><td>' + tweet.name + '</td><td>' + tweet.followers + '</td><td>'+ tweet.tweet + '</td></tr>';
+		        });
+
+
+		        html += "</tbody></table>";
+		        response.send(html);
+
+			});
+		});
+    })
 	// emails are sent via POST
     app.post('/email', function(req, res) {
     	email.call(app, req, res);
