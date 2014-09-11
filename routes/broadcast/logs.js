@@ -4,11 +4,6 @@
  * This layer allows us to broadcast periodical updates to the counter stats
  * independently of writes (which use increment operations).
  *
- * caveats:
- *   - Initial total and latest time query could be slightly off if restarted under
- *     heavy load. This will result in a very minor offset to the stats but won't
- *     lead to anything escalating.
- *
  * @package  StopTheSpies API
  * @author   Sam Pospischil <pospi@spadgos.com>
  * @since    2014-08-30
