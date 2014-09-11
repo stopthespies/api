@@ -11,9 +11,8 @@
 
 var async = require('async');
 var mongo = require(__dirname + '/../../lib/database');
-var config = require(__dirname + '/../../_config_');
 
-module.exports = function(app)
+module.exports = function(app, delay)
 {
   var theTotals = null;
 
@@ -36,9 +35,9 @@ module.exports = function(app)
 
           theTotals = totals;
 
-          setTimeout(pollStats, config.broadcast_logs_interval);
+          setTimeout(pollStats, delay);
         });
       });
-    }, config.broadcast_logs_interval);
+    }, delay);
   });
 };

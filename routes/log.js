@@ -83,7 +83,7 @@ module.exports = function() {
         });
     }
 
-    function main(req) {
+    function main(req, eventBroadcaster) {
 
         var event_type = req.data.event;
         var legislators = req.data.legislators || null;
@@ -139,7 +139,7 @@ module.exports = function() {
         // for them onscreen - their stats are only shown to a user after being loaded at that
         // point in time. Global stats sent by broadcast/logs.js
         if (legislators) {
-          this.io.broadcast(event_type, legislators);
+			eventBroadcaster.fire(event_type, legislators);
         }
 
         mongo.get().then(

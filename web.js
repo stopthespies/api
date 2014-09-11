@@ -14,7 +14,8 @@ var email = require(__dirname + '/routes/email');
 var websites = require(__dirname + '/routes/websites');
 
 // io event broadcasters
-var logBroadcaster = require(__dirname + '/routes/broadcast/logs');
+var LogBroadcaster = require(__dirname + '/routes/broadcast/logs');
+var LegislatorBroadcaster = require(__dirname + '/routes/broadcast/legislator-events');
 
 //------------------------------------------------------------------------------
 
@@ -80,6 +81,12 @@ mongo.get().then(function(db) {
 	});
 
 	//--------------------------------------------------------------------------
+	// broadcast daemons
+
+	LogBroadcaster(app, config.broadcast_logs_interval);
+	var legislatorEventBroadcaster = LegislatorBroadcaster(app, config.broadcast_logs_interval);
+
+	//--------------------------------------------------------------------------
 	// socket events
 
 	// read global stats
@@ -96,7 +103,7 @@ mongo.get().then(function(db) {
 
     // log events
     app.io.route('log', function(req) {
-    	log.call(app, req);
+    	log.call(app, req, legislatorEventBroadcaster);
 	});
 
 
@@ -104,11 +111,6 @@ mongo.get().then(function(db) {
     app.io.route('websites', function(req) {
     	websites.call(app, req);
 	});
-
-	//--------------------------------------------------------------------------
-	// broadcast daemons
-
-	logBroadcaster(app);
 
 	//--------------------------------------------------------------------------
 	// init server
