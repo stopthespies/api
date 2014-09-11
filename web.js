@@ -132,7 +132,6 @@ mongo.get().then(function(db) {
 
 			});
 		});
-    })
 	// emails are sent via POST
     app.post('/email', function(req, res) {
     	email.call(app, req, res);
