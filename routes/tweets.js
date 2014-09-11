@@ -7,6 +7,26 @@ var memberCSV = require('au-legislator-contacts-csv');
 
 function __search(db, query, options, callback)
 {
+
+	//db.collection('tweets').find(query, options || null, function(err, res) {
+
+
+	/*
+
+	db.collection('tweets').aggregate([
+	   {$group: {
+	       _id : {id : "$user.id", followers: "$user.followers_count" },
+	       count : { $sum : 1 },
+	       tweets : { $push : { id : "$_id", time : "$created_at", text : "$text"}}
+	   }},
+	   {
+	       $sort: {
+	           "_id.followers" : -1
+	       }
+	   }
+	], callback)
+
+*/
 	db.collection('tweets').find(query, options || null, function(err, res) {
 		if (err) {
 			callback(err);
@@ -48,13 +68,13 @@ module.exports = function(req) {
 			return !!m;
 		});
 
-		var searchOptions = {sort : [["created_at", 'desc']], limit : 200};	// :TODO: make configurable
+		var searchOptions = {sort : [["user.followers_count", 'desc']], limit : 300};	// :TODO: make configurable
 
 		var queries = [
 			// normal users
 			[{
 				"user.followers_count": {$lt : config.tweet_follower_celebrity_count},
-				"user.screen_name": {$nin : members},
+				"user.screen_name": {$in : members}, // TODO - change back to nin HACK
 			}, searchOptions],
 			// celebs
 			[{
