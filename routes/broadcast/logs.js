@@ -29,8 +29,8 @@ module.exports = function(app, delay)
               theTotals.views !== totals.views ||
               theTotals.emails !== totals.emails ||
               theTotals.calls !== totals.calls) {
-            console.log('broadcast stats');
-            app.io.broadcast('get_stats', [totals]);
+            console.log('Broadcast stats');
+            app.io.broadcast('stats:update', [totals]);
           }
 
           theTotals = totals;

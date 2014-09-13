@@ -20,8 +20,18 @@ var LegislatorBroadcaster = require(__dirname + '/routes/broadcast/legislator-ev
 //------------------------------------------------------------------------------
 
 app.use(cors());
-app.use(bodyParser.json())
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended: true}));
 app.http().io();
+
+// request helper
+
+app.input = function(req, varN)
+{
+	return req.body ? req.body[varN] : (req.data ? req.data[varN] : req.query[varN]);
+};
+
+// define routes
 
 mongo.get().then(function(db) {
 	//--------------------------------------------------------------------------
@@ -150,6 +160,10 @@ mongo.get().then(function(db) {
 
     app.post('/websites', function(req, res) {
     	req.io.route('websites');
+	});
+
+    app.post('/log', function(req, res) {
+    	req.io.route('log');
 	});
 
 	//--------------------------------------------------------------------------

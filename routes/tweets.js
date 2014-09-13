@@ -106,7 +106,7 @@ module.exports = function(req) {
 				'offset' : 0,	// :TODO: when we need paging
 				'total' : results[3],
 			};
-		    req.io.emit('get_tweets', tweets);
+		    req.io.respond(tweets);
 		});
 
 

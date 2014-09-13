@@ -24,7 +24,7 @@ module.exports = function(app, delay) {
 		return existing;
 	}
 
-	['views', 'calls', 'emails', 'tweets', 'facebooks'].forEach(function(evt) {
+	['l:views', 'l:calls', 'l:emails', 'l:tweets', 'l:facebooks'].forEach(function(evt) {
 		legislatorEventBroadcaster.setEventHandler(evt, pushLegislatorEvent);
 	});
 
