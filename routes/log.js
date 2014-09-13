@@ -83,10 +83,9 @@ module.exports = function() {
         });
     }
 
-    function main(req) {
-
-        var event_type = req.data.event;
-        var legislators = req.data.legislators || null;
+    function main(req, eventBroadcaster) {
+        var event_type = this.input(req, 'event');
+        var legislators = this.input(req, 'legislators');
         var query;
 
         if (legislators && !Array.isArray(legislators)) {
@@ -139,7 +138,7 @@ module.exports = function() {
         // for them onscreen - their stats are only shown to a user after being loaded at that
         // point in time. Global stats sent by broadcast/logs.js
         if (legislators) {
-          this.io.broadcast(event_type, legislators);
+			eventBroadcaster.fire('l:' + event_type, legislators);
         }
 
         mongo.get().then(
