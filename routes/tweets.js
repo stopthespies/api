@@ -42,6 +42,7 @@ function __search(db, query, options, callback)
 	        	return {
 					tweet: tweet.text,
 					handle: tweet.user.screen_name,
+					name: tweet.user.name,
 					avatar: tweet.user.profile_image_url,
 					link: 'https://twitter.com/#!/' + tweet.user.id + '/status/' + tweet._id + '/',
 					retweet_link: 'https://twitter.com/intent/retweet?tweet_id=' + tweet._id,
