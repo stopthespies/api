@@ -20,7 +20,7 @@ module.exports = function(req) {
 					emails: 0
 				}, function(err, res) {
 		            if (err) {
-		                console.warn("Mongo log write failed:", eventLog);
+		                console.warn("Mongo log write failed:");
 		                return;
 		            }
 		        });
