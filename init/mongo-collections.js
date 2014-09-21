@@ -19,7 +19,14 @@ function initCollections(db, members)
 
 	// reduce members to openaus IDs
 	members = members.map(function(m) {
-		return (m.openaus_id && m.openaus_id !== 'null') ? { _id : m.openaus_id } : false;
+		return (m.openaus_id && m.openaus_id !== 'null') ? {
+			_id : m.openaus_id,
+			views : 0,
+			calls : 0,
+			emails : 0,
+			tweets : 0,
+			facebooks : 0,
+		} : false;
 	}).filter(function(m) {
 		return m !== false;
 	});
