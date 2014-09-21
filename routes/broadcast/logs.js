@@ -12,28 +12,37 @@
 var async = require('async');
 var mongo = require(__dirname + '/../../lib/database');
 
+var theTotals = null;
+
+function send(app, totals)
+{
+	console.log('Broadcast stats');
+	app.io.broadcast('stats:update', totals);
+
+	theTotals = totals;
+}
+
 module.exports = function(app, delay)
 {
-  var theTotals = null;
-
   mongo.get().then(function(db) {
     setTimeout(function pollStats() {
-      db.collection('log_totals').find({_id : 'overall_totals'}, function(err, res) {
+      db.collection('log_totals').find({}, {sort: '_id'}, function(err, res) {
         if (err) throw err;
         res.toArray(function(err, totals) {
           if (err) throw err;
 
-          totals = totals[0];
-
-          if (!theTotals ||
-              theTotals.views !== totals.views ||
-              theTotals.emails !== totals.emails ||
-              theTotals.calls !== totals.calls) {
-            console.log('Broadcast stats');
-            app.io.broadcast('stats:update', [totals]);
-          }
-
-          theTotals = totals;
+          if (!theTotals) {
+	          send(app, totals);
+          } else {
+	          for (var i = 0, l = totals.length; i < l; ++i) {
+	          	if (theTotals[i].views !== totals[i].views ||
+	              theTotals[i].emails !== totals[i].emails ||
+	              theTotals[i].calls !== totals[i].calls) {
+	          		send(app, totals);
+		          	break;
+	          	}
+	          }
+	      }
 
           setTimeout(pollStats, delay);
         });
