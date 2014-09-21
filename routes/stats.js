@@ -8,24 +8,6 @@ module.exports = function(req) {
 	}
 
 	mongo.get().then(function(db) {
-		if (req.data && req.data.legislators) {
-
-			req.data.legislators.forEach(function(legislator){
-				db.collection('log_totals').insert({
-					_id: legislator,
-					calls: 0,
-					facebooks: 0,
-					views: 0,
-					tweets: 0,
-					emails: 0
-				}, function(err, res) {
-		            if (err) {
-		                console.warn("Mongo log write failed:");
-		                return;
-		            }
-		        });
-			});
-		}
 		db.collection('log_totals').find(search_record, function(err, res) {
 			if (err) {
 				req.io.respond(false);
