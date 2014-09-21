@@ -108,21 +108,10 @@ module.exports = function() {
 		        		query = { _id : OVERALL_TOTALS_ID };
 		        	}
 	       			break;
-                case 'emails':
-                    if (legislators) {
-                        query = { _id : { $in : legislators } };
-                    } else {
-                        query = { _id : OVERALL_TOTALS_ID };
-                    }
-                    break;
-                case 'calls':
-                    if (legislators) {
-                        query = { _id : { $in : legislators } };
-                    } else {
-                        query = { _id : OVERALL_TOTALS_ID };
-                    }
-                    break;
 	        	default:
+		        	// increment global totals for non-view event types as well
+                	legislators.push(OVERALL_TOTALS_ID);
+
 	        		query = { _id : { $in : legislators } };
 	       			break;
 	        }
