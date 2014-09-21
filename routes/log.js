@@ -46,6 +46,7 @@ module.exports = function() {
         db.collection(COLLECTION_NAME).update(
             query,
             inc_update,
+            { multi : true },
             function(err, result) {
                 if (err) {
                     console.warn("Mongo aggregate write failed:", query, inc_update);
@@ -122,7 +123,7 @@ module.exports = function() {
                     }
                     break;
 	        	default:
-	        		query = { _id : legislators };
+	        		query = { _id : { $in : legislators } };
 	       			break;
 	        }
 		} catch (e) {
