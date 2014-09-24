@@ -3,7 +3,7 @@ var mongo = require(__dirname + '/../lib/database');
 module.exports = function(req) {
 	var search_record = {};		// load all by default. There aren't that many members.
 
-	if (req.data && req.data.legislators) {
+	if (this.input('legislators')) {
 		search_record = {_id : {$in : req.data.legislators}};
 	}
 

@@ -94,7 +94,7 @@ module.exports = function() {
         }
 
         if (EVENT_TYPES.indexOf(event_type) == -1) {
-        	console.warn("HACK ATTEMPT:", req.data);	// let Forever catch these
+        	console.warn("HACK ATTEMPT:", req.data || req.query);	// let Forever catch these
 	        invalidRequest(req);
         	return;
         }
@@ -117,7 +117,7 @@ module.exports = function() {
 	        }
 		} catch (e) {
 			// validation error.
-        	console.warn("HACK ATTEMPT:", req.data);	// let Forever catch these
+        	console.warn("HACK ATTEMPT:", req.data || req.query);	// let Forever catch these
 	        invalidRequest(req);
 	        return;
 		}
