@@ -73,8 +73,8 @@ module.exports = function(req) {
 
 		var searchOptions = {
 			sort : [["user.followers_count", 'desc']],
-			limit : config.tweets_per_page,
-			skip : Math.max(0, (self.input(req, 'page') || 1) * config.tweets_per_page),
+			limit : 300,//config.tweets_per_page,
+			skip : 0//Math.max(0, (self.input(req, 'page') || 1) * config.tweets_per_page),
 		};
 
 		var queries = [
