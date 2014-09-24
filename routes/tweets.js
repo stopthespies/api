@@ -58,6 +58,8 @@ function __search(db, query, options, callback)
 // :TODO: pull and cache legislator twitter details to query against tweets
 
 module.exports = function(req) {
+	var self = this;
+
 	mongo.get().then(function(db) {
 	memberCSV.get().then(function(members) {
 
@@ -69,7 +71,10 @@ module.exports = function(req) {
 			return !!m;
 		});
 
-		var searchOptions = {sort : [["user.followers_count", 'desc']], limit : 300};	// :TODO: make configurable
+		var searchOptions = {
+			sort : [["user.followers_count", 'desc']],
+			limit : Math.max(0, (self.input(req, 'page') || 1) * 300),
+		};
 
 		var queries = [
 			// normal users
