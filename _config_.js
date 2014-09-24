@@ -5,6 +5,9 @@
  * :TODO: prepopulate legislator info into mongo from source data
  */
 module.exports = {
+	server_ssl : !(process.env.SKIP_SSL || false),
+	ssl_key_path : process.env.SSL_KEY_FILE,
+	ssl_cert_path : process.env.SSL_CERT_FILE,
 	server_port : process.env.PORT,
 	broadcast_logs_interval : process.env.SOCKET_BROADCAST_THROTTLE || 1000,	// how often to query latest global events and send to clients
 	mongo_connection_uri : process.env.MONGOHQ_URL,

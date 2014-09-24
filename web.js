@@ -1,4 +1,5 @@
 // deps
+var fs = require('fs');
 var app = require('express.io')();
 var cors = require('cors');
 var mongo = require(__dirname + '/lib/database');
@@ -22,7 +23,15 @@ var LegislatorBroadcaster = require(__dirname + '/routes/broadcast/legislator-ev
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
-app.http().io();
+
+if (config.server_ssl) {
+	app.https({
+		key: fs.readFileSync(config.ssl_key_path),
+		cert: fs.readFileSync(config.ssl_cert_path)
+	}).io();
+} else {
+	app.http().io();
+}
 
 // request helper
 
