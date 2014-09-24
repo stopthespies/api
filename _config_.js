@@ -5,7 +5,7 @@
  * :TODO: prepopulate legislator info into mongo from source data
  */
 module.exports = {
-	server_ssl : !(process.env.SKIP_SSL || false),
+	server_ssl : !(process.env.SKIP_SSL || true),	// defaulting to off as Heroku manages this internally
 	ssl_key_path : process.env.SSL_KEY_FILE,
 	ssl_cert_path : process.env.SSL_CERT_FILE,
 	server_port : process.env.PORT,
