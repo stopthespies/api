@@ -27,7 +27,7 @@ function __search(db, query, options, callback)
 	], callback)
 
 */
-	db.collection('tweets').find(query, options || null, function(err, res) {
+	db.collection('tweets').find(query, {}, options || null, function(err, res) {
 		if (err) {
 			callback(err);
 			return;
@@ -73,7 +73,8 @@ module.exports = function(req) {
 
 		var searchOptions = {
 			sort : [["user.followers_count", 'desc']],
-			limit : Math.max(0, (self.input(req, 'page') || 1) * 300),
+			limit : config.tweets_per_page,
+			skip : Math.max(0, (self.input(req, 'page') || 1) * config.tweets_per_page),
 		};
 
 		var queries = [
