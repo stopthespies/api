@@ -33,14 +33,15 @@ var TIMES_COLLECTION_NAME = 'log_event_times';
 
 module.exports = function() {
 
-    function sendToMongo(query, event_type, db) {
+    function sendToMongo(query, event_type, db, repeatedEvent) {
 
         var inc_update = {$inc: {} };
         inc_update['$inc'][event_type] = 1;
 
         var eventLog = {
         	type : event_type,
-        	time : new Date()
+        	time : new Date(),
+        	isRepeat : repeatedEvent,
         };
 
         db.collection(COLLECTION_NAME).update(
@@ -85,6 +86,7 @@ module.exports = function() {
     }
 
     function main(req, eventBroadcaster) {
+    	var self = this;
         var event_type = this.input(req, 'event');
         var legislators = this.input(req, 'legislators');
         var query;
@@ -133,7 +135,7 @@ module.exports = function() {
 
         mongo.get().then(
             function onSuccess(db) {
-                sendToMongo(query, event_type, db);
+                sendToMongo(query, event_type, db, self.input(req, 'repeat'));
                 success(req);	// do not wait for write acknowledgement
             },
             function onErr(err) {
