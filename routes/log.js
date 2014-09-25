@@ -33,16 +33,10 @@ var TIMES_COLLECTION_NAME = 'log_event_times';
 
 module.exports = function() {
 
-    function sendToMongo(query, event_type, db, repeatedEvent) {
+    function sendToMongo(query, event_type, db, eventsToLog) {
 
         var inc_update = {$inc: {} };
         inc_update['$inc'][event_type] = 1;
-
-        var eventLog = {
-        	type : event_type,
-        	time : new Date(),
-        	isRepeat : repeatedEvent,
-        };
 
         db.collection(COLLECTION_NAME).update(
             query,
@@ -58,14 +52,15 @@ module.exports = function() {
             }
         );
 
-        // :TODO: these logs need to be differentiatable per legislator they target
-        db.collection(TIMES_COLLECTION_NAME).insert(eventLog, function(err, res) {
-            if (err) {
-                console.warn("Mongo log write failed:", eventLog);
-                return;
-            }
-        });
-    }
+        if (eventsToLog.length) {
+	        db.collection(TIMES_COLLECTION_NAME).insert(eventsToLog, function(err, res) {
+	            if (err) {
+	                console.warn("Mongo log write failed:", eventsToLog);
+	                return;
+	            }
+	        });
+	    }
+	}
 
     function success(req) {
         req.io.respond({
@@ -86,9 +81,10 @@ module.exports = function() {
     }
 
     function main(req, eventBroadcaster) {
-    	var self = this;
         var event_type = this.input(req, 'event');
         var legislators = this.input(req, 'legislators');
+        var repeated = this.input(req, 'repeat');
+        var eventTime = new Date();
         var query;
 
         if (legislators && !Array.isArray(legislators)) {
@@ -100,6 +96,24 @@ module.exports = function() {
 	        invalidRequest(req);
         	return;
         }
+
+        var eventsToLog = [];
+        if (legislators) {
+			legislators.forEach(function(leg) {
+				eventsToLog.push({
+					legislator : leg,
+		        	type : event_type,
+		        	time : eventTime,
+		        	isRepeat : repeated,
+		        });
+			});
+		} else {
+			eventsToLog = [{
+	        	type : event_type,
+	        	time : eventTime,
+	        	isRepeat : repeated,
+			}];
+		}
 
         try {
 	        switch (event_type) {
@@ -135,7 +149,7 @@ module.exports = function() {
 
         mongo.get().then(
             function onSuccess(db) {
-                sendToMongo(query, event_type, db, self.input(req, 'repeat'));
+                sendToMongo(query, event_type, db, eventsToLog);
                 success(req);	// do not wait for write acknowledgement
             },
             function onErr(err) {
