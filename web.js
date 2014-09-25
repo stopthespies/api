@@ -37,7 +37,7 @@ if (config.server_ssl) {
 
 app.input = function(req, varN)
 {
-	return req.data ? req.data[varN] : (req.query ? req.query[varN] : req.body[varN]);
+	return req.data ? req.data[varN] : (req.query[varN] ? req.query[varN] : (req.body[varN] || null));
 };
 
 // define routes
