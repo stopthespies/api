@@ -11,6 +11,7 @@ var bodyParser = require('body-parser');
 var log = require(__dirname + '/routes/log');
 var tweets = require(__dirname + '/routes/tweets');
 var stats = require(__dirname + '/routes/stats');
+var shares = require(__dirname + '/routes/shares');
 var email = require(__dirname + '/routes/email');
 var websites = require(__dirname + '/routes/websites');
 
@@ -62,6 +63,9 @@ mongo.get().then(function(db) {
     app.get('/stats', function(req, res) {
     	req.io.route('stats');
 	});
+    app.get('/shares', function(req, res) {
+    	req.io.route('shares');
+	});
     app.get('/tweets', function(req, res) {
     	req.io.route('tweets');
 	});
@@ -87,6 +91,12 @@ mongo.get().then(function(db) {
 	app.io.route('stats', function(req) {
 		console.log('read stats');
     	stats.call(app, req);
+	});
+
+	// sharecounts proxy
+	app.io.route('shares', function(req) {
+		console.log('read shares');
+    	shares.call(app, req);
 	});
 
 	// read tweets

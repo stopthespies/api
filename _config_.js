@@ -1,8 +1,6 @@
 /**
  * Config for backend limits, thresholds, database etc
  * Also a layer of indirection above env variables to allow easy overrides during dev.
- *
- * :TODO: prepopulate legislator info into mongo from source data
  */
 module.exports = {
 	server_ssl : !(process.env.SKIP_SSL || true),	// defaulting to off as Heroku manages this internally
@@ -28,6 +26,9 @@ module.exports = {
 		access_token: process.env.TWITTER_ACCESS_TOKEN,
 		access_token_secret: process.env.TWITTER_ACCESS_SECRET
 	},
+
+	share_stats_url : 'https://d28jjwuneuxo3n.cloudfront.net/?networks=facebook,twitter,googleplus&url=https://shutthebackdoor.net',
+	share_stats_poll_interval : 5000,
 
 	mongoSetup : {
 		// configure collections to prepopulate
