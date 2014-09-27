@@ -38,6 +38,8 @@ var memberCSV = require('au-legislator-contacts-csv');
 
 //------------------------------------------------------------------------------
 
+var TWEETCACHE = null;
+
 function formatTweet(tweet)
 {
 	return {
@@ -51,8 +53,26 @@ function formatTweet(tweet)
 	}
 }
 
+function formatResponse(results)
+{
+	var count = results.pop();
+
+	return {
+		'results' : results.reduce(function(accum, val) {
+			for (var i in val) {
+				accum[i] = val[i];
+			}
+			return accum;
+		}, {}),
+		'offset' : 0,	// :TODO: when we need paging
+		'total' : count,
+	};
+}
+
 function __search(db, filter, readOffset, callback)
 {
+	console.log('Querying tweets...');
+
 	memberCSV.get().then(function(members) {
 
 		// reduce members down to twatter names
@@ -199,14 +219,28 @@ function __search(db, filter, readOffset, callback)
 
 		// run queries
 
-		async.parallel(queries, callback);
+		async.parallel(queries, function(err, res) {
+			callback(err, res);
+
+			// poll for new tweets at same interval as parse worker
+			if (!filter && !readOffset) {
+				setTimeout(function() {
+					__search(db, filter, readOffset, function(err, res) {
+						if (err) { throw err; }
+						TWEETCACHE = formatResponse(res);
+
+						// :TODO: broadcast updates
+					});
+				}, config.tweet_processor_interval);
+			}
+		});
 
 	}, function(err) {
 		callback(err);
 	});
 }
 
-// :TODO: pull and cache legislator twitter details to query against tweets
+//------------------------------------------------------------------------------
 
 module.exports = function(req)
 {
@@ -214,24 +248,25 @@ module.exports = function(req)
 	var readOffset = Math.max(0, ((self.input(req, 'page') || 1) - 1) * config.tweets_per_page);
 	var filter = self.input(req, 'filter') || false;
 
+	// read from cache if possible
+	if (!readOffset && !filter && TWEETCACHE) {
+		req.io.respond(TWEETCACHE);
+		return;
+	}
+
 	mongo.get().then(function(db) {
 
 		__search(db, filter, readOffset, function(err, results) {
 			if (err) throw err;
 
-			var count = results.pop();
+			var tweets = formatResponse(results);
 
-			var tweets = {
-				'results' : results.reduce(function(accum, val) {
-					for (var i in val) {
-						accum[i] = val[i];
-					}
-					return accum;
-				}, {}),
-				'offset' : 0,	// :TODO: when we need paging
-				'total' : count,
-			};
 		    req.io.respond(tweets);
+
+		    // cache for later if this is a default landing page request
+			if (!readOffset && !filter) {
+				TWEETCACHE = tweets;
+			}
 		});
 
 	}, function(err) {
