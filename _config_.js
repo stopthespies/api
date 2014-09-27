@@ -27,7 +27,7 @@ module.exports = {
 		access_token_secret: process.env.TWITTER_ACCESS_SECRET
 	},
 
-	share_stats_url : 'https://d28jjwuneuxo3n.cloudfront.net/?networks=facebook,twitter,googleplus&url=https://shutthebackdoor.net',
+	share_stats_url : 'https://d28jjwuneuxo3n.cloudfront.net/?networks=facebook,twitter,googleplus&url=https://stopthespies.org',
 	share_stats_poll_interval : 5000,
 
 	mongoSetup : {
