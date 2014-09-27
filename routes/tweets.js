@@ -194,7 +194,7 @@ function __search(db, filter, readOffset, callback)
 
 		var queries;
 		if (!filter) {
-			queries = [queryLatest];
+			queries = [queryByFollowers];
 		} else {
 			if (filter['latest']) {
 				queries.push(queryLatest);
