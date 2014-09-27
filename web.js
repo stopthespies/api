@@ -30,10 +30,16 @@ if (config.server_ssl) {
 		key: fs.readFileSync(config.ssl_key_path),
 		cert: fs.readFileSync(config.ssl_cert_path)
 	}).io();
+
 } else {
 	app.http().io();
 }
-
+app.io.on('error', function () {
+	console.log('why', arguments);
+});
+app.io.on('*', function () {
+	console.log('error', arguments);
+})
 // request helper
 
 app.input = function(req, varN)
