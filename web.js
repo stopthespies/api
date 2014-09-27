@@ -37,7 +37,7 @@ if (config.server_ssl) {
 app.io.on('error', function () {
 	console.log('why', arguments);
 });
-app.io.on('*', function () {
+app.io.on('connect', function () {
 	console.log('error', arguments);
 })
 // request helper
