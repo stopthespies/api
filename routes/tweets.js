@@ -1,68 +1,59 @@
+/**
+ * Querystring parameters:
+ *
+ * - page: paging offset for reads. Most useful when combined with 'filter'.
+ * - filter: subset of results to return. When ommitted, all tweets are returned ordered by time.
+ *   possible filter values:
+ *       - latest: returns all tweets ordered by date (same as no filter)
+ *       - followers: returns all tweets ordered by followers
+ *       - normal: returns tweets for normal users only, ordered by date
+ *       - celebs: returns tweets for celebrity users only, ordered by follower count
+ *       - reps: returns tweets for legislators, ordered by date
+ *
+ * Returned data:
+ *
+ * Results always include a total tweet count under `count`.
+ * Each filter resultset will be provided in the `results` object, in a subkey of the same name as the filter.
+ *
+ * for example:
+ * {
+ *   "results" : {
+ *   	"latest" : [...],
+ *   	"reps" : [...]
+ *   },
+ *   "count": 1000
+ * }
+ *
+ * The first page of results for each tweet type are cached in memory and
+ * reloaded at the same interval the tweet worker runs at.
+ *
+ * :TODO: featured tweets
+ */
+
 var mongo = require(__dirname + '/../lib/database');
 var config = require(__dirname + '/../_config_');
 var async = require('async');
 
 var memberCSV = require('au-legislator-contacts-csv');
 
+//------------------------------------------------------------------------------
 
-function __search(db, query, options, callback)
+function formatTweet(tweet)
 {
-
-	//db.collection('tweets').find(query, options || null, function(err, res) {
-
-
-	/*
-
-	db.collection('tweets').aggregate([
-	   {$group: {
-	       _id : {id : "$user.id", followers: "$user.followers_count" },
-	       count : { $sum : 1 },
-	       tweets : { $push : { id : "$_id", time : "$created_at", text : "$text"}}
-	   }},
-	   {
-	       $sort: {
-	           "_id.followers" : -1
-	       }
-	   }
-	], callback)
-
-*/
-	db.collection('tweets').find(query, {}, options || null, function(err, res) {
-		if (err) {
-			callback(err);
-			return;
-		}
-		res.toArray(function(err, docs) {
-			if (err) {
-				callback(err);
-				return;
-			}
-
-	        var tweets = docs.map(function(tweet){
-	        	return {
-					tweet: tweet.text,
-					handle: tweet.user.screen_name,
-					name: tweet.user.name,
-					avatar: tweet.user.profile_image_url,
-					link: 'https://twitter.com/#!/' + tweet.user.id + '/status/' + tweet._id + '/',
-					retweet_link: 'https://twitter.com/intent/retweet?tweet_id=' + tweet._id,
-					followers: tweet.user.followers_count
-	        	}
-	        });
-
-	        callback(null, tweets);
-		});
-	});
+	return {
+		tweet: tweet.text,
+		handle: tweet.user.screen_name,
+		name: tweet.user.name,
+		avatar: tweet.user.profile_image_url,
+		link: 'https://twitter.com/#!/' + tweet.user.id + '/status/' + tweet._id + '/',
+		retweet_link: 'https://twitter.com/intent/retweet?tweet_id=' + tweet._id,
+		followers: tweet.user.followers_count
+	}
 }
 
-// :TODO: pull and cache legislator twitter details to query against tweets
-
-module.exports = function(req) {
-	var self = this;
-
-	mongo.get().then(function(db) {
+function __search(db, filter, readOffset, callback)
+{
 	memberCSV.get().then(function(members) {
-
 
 		// reduce members down to twatter names
 		members = members.map(function(m) {
@@ -71,55 +62,179 @@ module.exports = function(req) {
 			return !!m;
 		});
 
-		var searchOptions = {
-			sort : [["user.followers_count", 'desc']],
-			limit : config.tweets_per_page,
-			skip : Math.max(0, ((self.input(req, 'page') || 1) - 1) * config.tweets_per_page),
-		};
+		// define queries
 
-		var queries = [
-			// normal users
-			[{
+		function queryLatest(cb)
+		{
+			db.collection('tweets').find({}, {}, {
+				sort : [["created_at", 'desc']],
+				limit : config.tweets_per_page,
+				skip : readOffset,
+			}, function(err, res) {
+				if (err) { cb(err); return; }
+
+				res.toArray(function(err, docs) {
+					if (err) { cb(err); return; }
+
+					cb(null, {
+						'latest' : docs.map(formatTweet)
+					});
+				});
+			});
+		}
+
+		function queryByFollowers(cb)
+		{
+			db.collection('tweets').find({}, {}, {
+				sort : [["user.followers_count", 'desc']],
+				limit : config.tweets_per_page,
+				skip : readOffset,
+			}, function(err, res) {
+				if (err) { cb(err); return; }
+
+				res.toArray(function(err, docs) {
+					if (err) { cb(err); return; }
+
+					cb(null, {
+						'followers' : docs.map(formatTweet)
+					});
+				});
+			});
+		}
+
+		function queryNormal(cb)
+		{
+			db.collection('tweets').find({
 				"user.followers_count": {$lt : config.tweet_follower_celebrity_count},
-				"user.screen_name": {$in : members}, // TODO - change back to nin HACK
-			}, searchOptions],
-			// celebs
-			[{
-				"user.followers_count": {$gte : config.tweet_follower_celebrity_count},
-				"user.screen_name": {$nin : members},
-			}, searchOptions],
-			[{
-				"user.screen_name": {$in : members}
-			}, searchOptions],
-			// :SHONK: random string ID used to change inner behaviour of the below
-			'COUNT'
-		];
+				"user.screen_name": {$nin : members}
+			}, {}, {
+				sort : [["created_at", 'desc']],
+				limit : config.tweets_per_page,
+				skip : readOffset,
+			}, function(err, res) {
+				if (err) { cb(err); return; }
 
-		async.map(queries, function(query, callback) {
-			if ('COUNT' === query) {
-				db.collection('tweets').count(callback);
-			} else {
-				__search(db, query[0], query[1], callback);
+				res.toArray(function(err, docs) {
+					if (err) { cb(err); return; }
+
+					cb(null, {
+						'normal' : docs.map(formatTweet)
+					});
+				});
+			});
+		}
+
+		function queryCelebs(cb)
+		{
+			db.collection('tweets').find({
+				"user.followers_count": {$gte : config.tweet_follower_celebrity_count},
+				"user.screen_name": {$nin : members}
+			}, {}, {
+				sort : [["user.followers_count", 'desc']],
+				limit : config.tweets_per_page,
+				skip : readOffset,
+			}, function(err, res) {
+				if (err) { cb(err); return; }
+
+				res.toArray(function(err, docs) {
+					if (err) { cb(err); return; }
+
+					cb(null, {
+						'celebs' : docs.map(formatTweet)
+					});
+				});
+			});
+		}
+
+		function queryReps(cb)
+		{
+			db.collection('tweets').find({
+				"user.screen_name": {$in : members}
+			}, {}, {
+				sort : [["created_at", 'desc']],
+				limit : config.tweets_per_page,
+				skip : readOffset,
+			}, function(err, res) {
+				if (err) { cb(err); return; }
+
+				res.toArray(function(err, docs) {
+					if (err) { cb(err); return; }
+
+					cb(null, {
+						'reps' : docs.map(formatTweet)
+					});
+				});
+			});
+		}
+
+		function getCount(cb)
+		{
+			db.collection('tweets').count(cb);
+		}
+
+		// choose queries based on filter
+
+		var queries;
+		if (!filter) {
+			queries = [queryLatest];
+		} else {
+			if (filter['latest']) {
+				queries.push(queryLatest);
 			}
-		}, function(err, results) {
+			if (filter['followers']) {
+				queries.push(queryByFollowers);
+			}
+			if (filter['normal']) {
+				queries.push(queryNormal);
+			}
+			if (filter['celebs']) {
+				queries.push(queryCelebs);
+			}
+			if (filter['reps']) {
+				queries.push(queryReps);
+			}
+		}
+
+		queries.push(getCount);	// :IMPORTANT: counts must be last
+
+		// run queries
+
+		async.parallel(queries, callback);
+
+	}, function(err) {
+		callback(err);
+	});
+}
+
+// :TODO: pull and cache legislator twitter details to query against tweets
+
+module.exports = function(req)
+{
+	var self = this;
+	var readOffset = Math.max(0, ((self.input(req, 'page') || 1) - 1) * config.tweets_per_page);
+	var filter = self.input(req, 'filter') || false;
+
+	mongo.get().then(function(db) {
+
+		__search(db, filter, readOffset, function(err, results) {
 			if (err) throw err;
 
+			var count = results.pop();
+
 			var tweets = {
-				'latest' : {
-					//'public' : results[0],
-					'celebrities' : results[1]
-					//'legislators' : results[2],
-				},
+				'results' : results.reduce(function(accum, val) {
+					for (var i in val) {
+						accum[i] = val[i];
+					}
+					return accum;
+				}, {}),
 				'offset' : 0,	// :TODO: when we need paging
-				'total' : results[3],
+				'total' : count,
 			};
 		    req.io.respond(tweets);
 		});
 
-
 	}, function(err) {
-		throw err;
-	})}, function(err) {
 		throw err;
 	});
 
