@@ -71,8 +71,6 @@ function formatResponse(results)
 
 function __search(db, filter, readOffset, callback)
 {
-	console.log('Querying tweets...');
-
 	memberCSV.get().then(function(members) {
 
 		// reduce members down to twatter names
