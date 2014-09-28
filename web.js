@@ -34,12 +34,7 @@ if (config.server_ssl) {
 } else {
 	app.http().io();
 }
-app.io.on('error', function () {
-	console.log('why', arguments);
-});
-app.io.on('connect', function () {
-	console.log('error', arguments);
-})
+
 // request helper
 
 app.input = function(req, varN)
