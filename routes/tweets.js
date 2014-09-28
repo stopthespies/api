@@ -71,6 +71,8 @@ function formatResponse(results)
 
 function __search(db, filter, readOffset, callback)
 {
+	var app = this;
+
 	memberCSV.get().then(function(members) {
 
 		// reduce members down to twatter names
@@ -223,11 +225,17 @@ function __search(db, filter, readOffset, callback)
 			// poll for new tweets at same interval as parse worker
 			if (!filter && !readOffset) {
 				setTimeout(function() {
-					__search(db, filter, readOffset, function(err, res) {
+					__search.call(app, db, filter, readOffset, function(err, res) {
 						if (err) { throw err; }
-						TWEETCACHE = formatResponse(res);
+						var tweets = formatResponse(res);
 
-						// :TODO: broadcast updates
+						// broadcast updates
+						if (!TWEETCACHE || TWEETCACHE.total != tweets.total) {
+							console.log('Broadcast tweets');
+							app.io.broadcast('tweets:updateCount', tweets.total);
+						}
+
+						TWEETCACHE = tweets;
 					});
 				}, config.tweet_processor_interval);
 			}
@@ -254,7 +262,7 @@ module.exports = function(req)
 
 	mongo.get().then(function(db) {
 
-		__search(db, filter, readOffset, function(err, results) {
+		__search.call(self, db, filter, readOffset, function(err, results) {
 			if (err) throw err;
 
 			var tweets = formatResponse(results);
