@@ -127,7 +127,7 @@ module.exports = function() {
 	       			break;
 	        	default:
 		        	// increment global totals for non-view event types as well
-                	legislators.push(OVERALL_TOTALS_ID);
+                	//legislators.push(OVERALL_TOTALS_ID);
 
 	        		query = { _id : { $in : legislators } };
 	       			break;
