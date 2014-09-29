@@ -37,6 +37,8 @@ module.exports = function(app, delay)
 	          for (var i = 0, l = totals.length; i < l; ++i) {
 	          	if (theTotals[i].views !== totals[i].views ||
 	              theTotals[i].emails !== totals[i].emails ||
+	              theTotals[i].facebooks !== totals[i].facebooks ||
+	              theTotals[i].tweets !== totals[i].tweets ||
 	              theTotals[i].calls !== totals[i].calls) {
 	          		send(app, totals);
 		          	break;
