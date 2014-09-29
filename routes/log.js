@@ -150,7 +150,7 @@ module.exports = function() {
 
         mongo.get().then(
             function onSuccess(db) {
-                console.log('BLE', query, event_type, db, eventsToLog)
+                console.log('BLE', query, eventsToLog);
                 sendToMongo(query, event_type, db, eventsToLog);
                 success(req);	// do not wait for write acknowledgement
             },
