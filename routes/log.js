@@ -117,7 +117,6 @@ module.exports = function() {
 
         try {
 	        switch (event_type) {
-
 	        	case 'views':
 		        	if (legislators) {
 		        		query = { _id : { $in : legislators } };
@@ -127,7 +126,7 @@ module.exports = function() {
 	       			break;
 	        	default:
 		        	// increment global totals for non-view event types as well
-                	//legislators.push(OVERALL_TOTALS_ID);
+                	legislators.push(OVERALL_TOTALS_ID);
 
 	        		query = { _id : { $in : legislators } };
 	       			break;
@@ -150,7 +149,6 @@ module.exports = function() {
 
         mongo.get().then(
             function onSuccess(db) {
-                console.log('BLE', query, eventsToLog);
                 sendToMongo(query, event_type, db, eventsToLog);
                 success(req);	// do not wait for write acknowledgement
             },
