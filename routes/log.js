@@ -117,27 +117,7 @@ module.exports = function() {
 
         try {
 	        switch (event_type) {
-                case 'facebooks':
-                    if (legislators) {
-                        query = { _id : { $in : legislators } };
-                    } else {
-                        query = { _id : OVERALL_TOTALS_ID };
-                    }
-                    break;
-                case 'calls':
-                    if (legislators) {
-                        query = { _id : { $in : legislators } };
-                    } else {
-                        query = { _id : OVERALL_TOTALS_ID };
-                    }
-                    break;
-                case 'emails':
-                    if (legislators) {
-                        query = { _id : { $in : legislators } };
-                    } else {
-                        query = { _id : OVERALL_TOTALS_ID };
-                    }
-                    break;
+
 	        	case 'views':
 		        	if (legislators) {
 		        		query = { _id : { $in : legislators } };
@@ -170,6 +150,7 @@ module.exports = function() {
 
         mongo.get().then(
             function onSuccess(db) {
+                console.log('BLE', query, event_type, db, eventsToLog);
                 sendToMongo(query, event_type, db, eventsToLog);
                 success(req);	// do not wait for write acknowledgement
             },
