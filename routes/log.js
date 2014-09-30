@@ -117,27 +117,6 @@ module.exports = function() {
 
         try {
 	        switch (event_type) {
-                case 'facebooks':
-                    if (legislators) {
-                        query = { _id : { $in : legislators } };
-                    } else {
-                        query = { _id : OVERALL_TOTALS_ID };
-                    }
-                    break;
-                case 'calls':
-                    if (legislators) {
-                        query = { _id : { $in : legislators } };
-                    } else {
-                        query = { _id : OVERALL_TOTALS_ID };
-                    }
-                    break;
-                case 'emails':
-                    if (legislators) {
-                        query = { _id : { $in : legislators } };
-                    } else {
-                        query = { _id : OVERALL_TOTALS_ID };
-                    }
-                    break;
 	        	case 'views':
 		        	if (legislators) {
 		        		query = { _id : { $in : legislators } };
