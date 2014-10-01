@@ -35,7 +35,8 @@ module.exports = function(app, delay)
 	          send(app, totals);
           } else {
 	          for (var i = 0, l = totals.length; i < l; ++i) {
-	          	if (theTotals[i].views !== totals[i].views ||
+	          	if (theTotals[i].visits !== totals[i].visits ||
+	          	  theTotals[i].views !== totals[i].views ||
 	              theTotals[i].emails !== totals[i].emails ||
 	              theTotals[i].calls !== totals[i].calls ||
 	              theTotals[i].tweets !== totals[i].tweets ||
