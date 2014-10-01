@@ -3,9 +3,11 @@
  *
  * event - The type of event to log (views, calls or emails). Other parameters differ by event type:
  *
+ * 'visits'
+ * 	- passed parameterless. logs a pageview.
+ *
  * 'views'
- * 	- can be passed parameterless to register a pageview
- *  - can come with a 'legislators' array of legislator IDs
+ * 	- must come with a 'legislators' parameter, may contain an arbitrary number of IDs
  *
  * 'calls'
  * 	- must come with a 'legislators' parameter containing only a single ID
@@ -25,7 +27,7 @@ var async = require('async');
 var mongo = require(__dirname + '/../lib/database');
 var config = require(__dirname + '/../_config_');
 
-var EVENT_TYPES = ['views', 'calls', 'emails', 'tweets', 'facebooks'];
+var EVENT_TYPES = ['visits', 'views', 'calls', 'emails', 'tweets', 'facebooks'];
 var COLLECTION_NAME = 'log_totals';
 var OVERALL_TOTALS_ID = 'overall_totals';
 
@@ -117,17 +119,12 @@ module.exports = function() {
 
         try {
 	        switch (event_type) {
-	        	case 'views':
-		        	if (legislators) {
-		        		query = { _id : { $in : legislators } };
-		        	} else {
-		        		query = { _id : OVERALL_TOTALS_ID };
-		        	}
-	       			break;
+	        	case 'visits':
+	        		query = { _id : OVERALL_TOTALS_ID };
+	        		break;
 	        	default:
-		        	// increment global totals for non-view event types as well
+		        	// increment global totals for non-visit event types as well
                 	legislators.push(OVERALL_TOTALS_ID);
-
 	        		query = { _id : { $in : legislators } };
 	       			break;
 	        }
