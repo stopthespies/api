@@ -15,7 +15,7 @@ module.exports = {
 
 	tweet_processor_interval : 15000,
 	tweet_processor_batch_size : 100,
-	tweet_processor_match : 'stopthespies.org OR #stopthespies OR #stopdataretention',
+	tweet_processor_match : ['stopthespies.org', '#stopthespies', '#stopdataretention'],
 	tweet_processor_account_blacklist : [
 
 	],
