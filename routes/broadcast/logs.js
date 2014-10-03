@@ -41,6 +41,7 @@ module.exports = function(app, delay)
 	              theTotals[i].calls !== totals[i].calls ||
 	              theTotals[i].tweets !== totals[i].tweets ||
 	              theTotals[i].facebooks !== totals[i].facebooks) {
+
 	          		send(app, totals);
 		          	break;
 	          	}
