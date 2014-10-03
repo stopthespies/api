@@ -38,10 +38,13 @@ module.exports = {
 				{ calls : 1 },
 				{ emails : 1 },
 				{ views : 1 },
+				{ visits : 1 },
 			],
 			log_event_times : [
 				{ time : 1 },
 				{ type : 1 },
+				{ legislator : 1 },
+				{ isRepeat : 1 },
 			],
 			tweets : [
 				{ "user.followers_count" : 1 },
