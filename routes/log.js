@@ -122,13 +122,6 @@ module.exports = function() {
 	        	case 'visits':
 	        		query = { _id : OVERALL_TOTALS_ID };
 	        		break;
-	        	case 'views':
-		        	if (legislators) {
-		        		query = { _id : { $in : legislators } };
-		        	} else {
-		        		query = { _id : OVERALL_TOTALS_ID };
-		        	}
-	       			break;
 	        	default:
 		        	// increment global totals for non-visit event types as well
                 	legislators.push(OVERALL_TOTALS_ID);
