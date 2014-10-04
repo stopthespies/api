@@ -92,7 +92,7 @@ mongo.get().then(function(db) {
 	// broadcast daemons
 
 	LogBroadcaster(app, config.broadcast_logs_interval);
-	var legislatorEventBroadcaster = LegislatorBroadcaster(app, config.broadcast_logs_interval);
+	var legislatorEventBroadcaster = LegislatorBroadcaster(app, config.broadcast_legislator_events_interval);
 
 	//--------------------------------------------------------------------------
 	// socket events
