@@ -31,6 +31,8 @@ module.exports = {
 	share_stats_url : 'https://d28jjwuneuxo3n.cloudfront.net/?networks=facebook,twitter,googleplus&url=https://stopthespies.org',
 	share_stats_poll_interval : 5000,
 
+	enable_redis_nodepool : process.env.ENABLE_REDIS || false,
+
 	mongoSetup : {
 		// configure collections to prepopulate
 		collectionsAndIndexes : {

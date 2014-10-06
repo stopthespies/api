@@ -1,10 +1,14 @@
 // deps
+var  _ = require('lodash');
 var fs = require('fs');
-var app = require('express.io')();
+var express = require('express.io');
+var app = express();
 var cors = require('cors');
+var redis = require('redis');
+var RedisStore = express.io.RedisStore;
+
 var mongo = require(__dirname + '/lib/database');
 var config = require(__dirname + '/_config_');
-var  _ = require('lodash');
 var bodyParser = require('body-parser');
 
 // request handlers
@@ -21,6 +25,10 @@ var LegislatorBroadcaster = require(__dirname + '/routes/broadcast/legislator-ev
 
 //------------------------------------------------------------------------------
 
+var workers = function()
+{
+//--------------- worker -------------
+
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
@@ -33,6 +41,15 @@ if (config.server_ssl) {
 
 } else {
 	app.http().io();
+}
+
+// redis store
+if (config.enable_redis_nodepool) {
+	app.io.set('store', new RedisStore({
+		redisPub: redis.createClient(),
+		redisSub: redis.createClient(),
+		redisClient: redis.createClient()
+	}));
 }
 
 // request helper
@@ -138,3 +155,22 @@ mongo.get().then(function(db) {
 });
 
 
+//--------------- /worker -------------
+};
+
+
+if (config.enable_redis_nodepool) {
+	// Start forking if you are the master.
+	cluster = require('cluster')
+	numCPUs = require('os').cpus().length;
+
+	if (cluster.isMaster) {
+	    for (var i = 0; i < numCPUs; i++) {
+	    	cluster.fork();
+	   	}
+	} else {
+		workers();
+	}
+} else {
+	workers();
+}
